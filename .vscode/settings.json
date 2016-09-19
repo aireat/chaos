@@ -1,0 +1,51 @@
+// 설정을 이 파일에 넣어서 기본 설정과 사용자 설정을 덮어씁니다.
+{
+    
+    
+// 파일
+    
+    // 파일을 읽고 쓸 때 사용할 기본 문자 집합 인코딩입니다.
+    "files.encoding": "utf8",
+    
+    // 줄 바꿈 문자의 기본 끝입니다.
+    "files.eol": "\n",
+    //"files.eol": "\r\n",
+
+
+// Diff 편집기
+    
+    // diff 편집기에서 선행 공백 또는 후행 공백 변경을 diffs로 표시할지 여부를 제어합니다.
+    "diffEditor.ignoreTrimWhitespace": true,
+
+
+// 편집기
+    
+    // Controls the font family.
+    //"editor.fontFamily": "Consolas, 굴림",
+    
+    // 세로 눈금자를 표시할 열
+    "editor.rulers": [90],
+
+    // 편집기에서 몇 개의 문자 이후에 줄을 바꿀지를 제어합니다. 이 값을 0으로 설정하면 뷰포트 너비 줄 바꿈이 설정됩니다(자동 줄바꿈). -1로 설정하면 편집기에서 줄바꿈을 하지 않습니다.
+    "editor.wrappingColumn": 90,
+    
+    // 줄 번호의 표시 여부를 제어합니다.
+    "editor.lineNumbers": true,
+    
+    // 줄 바꿈 행의 들여쓰기를 제어합니다. 'none', 'same' 또는 'indent' 중 하나일 수 있습니다.
+    //"editor.wrappingIndent": "none",
+    //"editor.wrappingIndent": "same",
+    "editor.wrappingIndent": "indent",
+
+    // 편집기에서 공백 문자를 렌더링할지 여부를 제어합니다.
+    "editor.renderWhitespace": true,
+    
+    // 탭 한 개에 해당하는 공백 수입니다. `editor.detectIndentation`이 켜져 있는 경우 이 설정은 파일 콘텐츠에 따라 재정의됩니다.
+    "editor.tabSize": 4,
+    
+    // Tab 키를 누를 때 공백을 삽입합니다.
+    "editor.insertSpaces": true,
+        
+    // 끝에 자동 삽입된 공백 제거
+    "editor.trimAutoWhitespace": true
+}
