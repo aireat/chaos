@@ -1,3 +1,12 @@
+
+# VSCODE
+.vscode/**/*.DB*
+.vscode/**/*.db*
+
+# Build folder
+**/build/**
+**/bin/**
+
 # Object files
 *.o
 *.ko
@@ -31,3 +40,4 @@
 # Debug files
 *.dSYM/
 *.su
+
