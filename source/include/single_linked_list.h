@@ -20,10 +20,11 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TYPE_LIST_H__
-#define __TYPE_LIST_H__
+#ifndef __SINGLE_LINKED_LIST_H__
+#define __SINGLE_LINKED_LIST_H__
 
 #include "type.h"
+#include "type_list.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,47 +33,10 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-/*======================================================================================*/
-/*
-    Single linked list (not circle)
-*/
-/*======================================================================================*/
-
-typedef struct _SNODE_
-{
-    struct _SNODE_         *p_next;
-
-} SNODE_t, *P_SNODE_t;
-
-
-typedef struct
-{
-    P_SNODE_t               p_head;
-    P_SNODE_t               p_tail;
-
-} SLIST_t, *P_SLIST_t;
-
-
-/*======================================================================================*/
-/*
-    Double linked list (not circle)
-*/
-/*======================================================================================*/
-
-typedef struct _DNODE_
-{
-    struct _DNODE_         *p_next;
-    struct _DNODE_         *p_prev;
-
-} DNODE_t, *P_DNODE_t;
-
-
-typedef struct
-{
-    P_DNODE_t               p_head;
-    P_DNODE_t               p_tail;
-
-} DLIST_t, *P_DLIST_t;
+VOID slist_init_list(P_SLIST_t p_list);
+VOID slist_add_node_at_head(P_SLIST_t p_list, P_SNODE_t p_add_node);
+VOID slist_add_node_at_tail(P_SLIST_t p_list, P_SNODE_t p_add_node);
+VOID slist_cut_node(P_SLIST_t p_list, P_SNODE_t p_cut_node);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -81,5 +45,5 @@ typedef struct
     } /* extern "C" */
 #endif
 
-#endif //__TYPE_LIST_H__
+#endif //__SINGLE_LINKED_LIST_H__
 
