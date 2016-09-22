@@ -2,10 +2,10 @@
 SILENCE = @
 
 #---- Outputs ----#
-COMPONENT_NAME = emv_kernel
+COMPONENT_NAME = chaos
 	
 TEST_TARGET = \
-	bin/$(COMPONENT_NAME)
+	bin/$(COMPONENT_NAME).lib
 
 CPPUTEST_OBJS_DIR = \
 	build/objs
@@ -18,8 +18,8 @@ PROJECT_HOME_DIR = .
 CPP_PLATFORM = Gcc
 
 SRC_DIRS = \
-	$(PROJECT_HOME_DIR)/src \
-#	$(PROJECT_HOME_DIR)/src/LedDriver \
+	$(PROJECT_HOME_DIR)/source \
+	$(PROJECT_HOME_DIR)/source/include \
 
 TEST_SRC_DIRS = \
 	tests\
@@ -28,7 +28,7 @@ TEST_SRC_DIRS = \
 INCLUDE_DIRS =\
   .\
   $(PROJECT_HOME_DIR)/include \
-  $(PROJECT_HOME_DIR)/src/include \
+  $(PROJECT_HOME_DIR)/source/include \
   $(CPPUTEST_HOME)/include\
 #  $(PROJECT_HOME_DIR)/include/LedDriver\
   
