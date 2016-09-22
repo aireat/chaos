@@ -38,7 +38,7 @@
 */
 /*======================================================================================*/
 #ifndef CO_GET_OFFSET
-#define CO_GET_OFFSET(type, member)      (INT)&(((type*)0)->member)
+#define CO_GET_OFFSET(type, member)      ((long)&(((type*)0)->member))
 #endif
 
 
@@ -48,7 +48,7 @@
 */
 /*======================================================================================*/
 #ifndef CO_GET_TYPE
-#define CO_GET_TYPE(type, member, addr) (type*)(((INT8*)(addr))-(INT)&(((type*)0)->member))
+#define CO_GET_TYPE(type, member, addr) (type*)(((char*)(addr))-(long)&(((type*)0)->member))
 #endif
 
 
