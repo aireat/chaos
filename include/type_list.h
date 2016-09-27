@@ -64,6 +64,8 @@ typedef struct _DNODE_
     struct _DNODE_         *p_next;
     struct _DNODE_         *p_prev;
 
+    P_DLIST_t               p_list;
+
 } DNODE_t, *P_DNODE_t;
 
 
