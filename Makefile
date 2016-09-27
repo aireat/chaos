@@ -5,7 +5,7 @@ SILENCE = @
 COMPONENT_NAME = chaos
     
 TEST_TARGET = \
-    bin/$(COMPONENT_NAME).lib
+    bin/$(COMPONENT_NAME).exe
 
 CPPUTEST_OBJS_DIR = \
     build/objs
@@ -54,7 +54,7 @@ CPPUTEST_WARNINGFLAGS     += -Wunused-label
 CPPUTEST_WARNINGFLAGS     += -Wunused-value
 CPPUTEST_WARNINGFLAGS     += -Wunused-variable
 CPPUTEST_WARNINGFLAGS     += -Wunused-value
-CPPUTEST_WARNINGFLAGS     += -Wunused-parameter
+#CPPUTEST_WARNINGFLAGS     += -Wunused-parameter
 CPPUTEST_WARNINGFLAGS     += -Wempty-body
 
 CPPUTEST_WARNINGFLAGS     += -Wmissing-noreturn
