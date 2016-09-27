@@ -46,6 +46,7 @@ TEST(double_linked_list, T02_00)
 
     LONGS_EQUAL(NULL, nodes[NODE_FIRST].p_next);
     LONGS_EQUAL(NULL, nodes[NODE_FIRST].p_prev);
+    LONGS_EQUAL(&dlist, nodes[NODE_FIRST].p_list);
 
     LONGS_EQUAL(&nodes[NODE_FIRST], dlist.p_head);
     LONGS_EQUAL(&nodes[NODE_FIRST], dlist.p_tail);        
@@ -68,6 +69,7 @@ TEST(double_linked_list, T02_01)
 
         LONGS_EQUAL(&nodes[i-1], nodes[i].p_next);
         LONGS_EQUAL(NULL, nodes[i].p_prev);
+        LONGS_EQUAL(&dlist, nodes[i].p_list);
 
         LONGS_EQUAL(&nodes[i], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_tail);
@@ -81,6 +83,10 @@ TEST(double_linked_list, T03_00)
 
     dlist_init_list(&dlist);
     dlist_add_node_at_tail(&dlist, &nodes[NODE_LAST]);
+    
+    LONGS_EQUAL(NULL, nodes[NODE_LAST].p_next);
+    LONGS_EQUAL(NULL, nodes[NODE_LAST].p_prev);
+    LONGS_EQUAL(&dlist, nodes[NODE_LAST].p_list);
 
     LONGS_EQUAL(&nodes[NODE_LAST], dlist.p_head);
     LONGS_EQUAL(&nodes[NODE_LAST], dlist.p_tail);        
@@ -103,6 +109,7 @@ TEST(double_linked_list, T03_01)
 
         LONGS_EQUAL(NULL, nodes[i].p_next);
         LONGS_EQUAL(&nodes[i-1], nodes[i].p_prev);
+        LONGS_EQUAL(&dlist, nodes[i].p_list);
 
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_head);
         LONGS_EQUAL(&nodes[i], dlist.p_tail);
@@ -127,7 +134,7 @@ TEST(double_linked_list, T04_00)
     // cut node forward
     for (i = NODE_COUNT-1; i > 0; i--)
     {
-        dlist_cut_node(&dlist, &nodes[i]);
+        dlist_cut_node(&nodes[i]);
 
         LONGS_EQUAL(&nodes[i-1], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_tail);
@@ -151,7 +158,7 @@ TEST(double_linked_list, T04_01)
     // cut node backward
     for (i = 1; i < NODE_COUNT-1; i++)
     {
-        dlist_cut_node(&dlist, &nodes[i]);
+        dlist_cut_node(&nodes[i]);
 
         LONGS_EQUAL(&nodes[NODE_COUNT-1], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_tail);
@@ -159,7 +166,7 @@ TEST(double_linked_list, T04_01)
 
     // cut last node except temp node
     {
-        dlist_cut_node(&dlist, &nodes[NODE_COUNT-1]);    
+        dlist_cut_node(&nodes[NODE_COUNT-1]);    
 
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_tail);
@@ -184,7 +191,7 @@ TEST(double_linked_list, T04_02)
     // cut node forward
     for (i = 1; i < NODE_COUNT-1; i++)
     {
-        dlist_cut_node(&dlist, &nodes[i]);
+        dlist_cut_node(&nodes[i]);
 
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_COUNT-1], dlist.p_tail);
@@ -192,7 +199,7 @@ TEST(double_linked_list, T04_02)
 
     // cut last node except temp node
     {
-        dlist_cut_node(&dlist, &nodes[NODE_COUNT-1]);    
+        dlist_cut_node(&nodes[NODE_COUNT-1]);    
 
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_head);
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_tail);
@@ -216,7 +223,7 @@ TEST(double_linked_list, T04_03)
     // cut node backward
     for (i = NODE_COUNT-1; i > 0; i--)
     {
-        dlist_cut_node(&dlist, &nodes[i]);
+        dlist_cut_node(&nodes[i]);
 
         LONGS_EQUAL(&nodes[NODE_TEMP], dlist.p_head);
         LONGS_EQUAL(&nodes[i-1], dlist.p_tail);
@@ -231,9 +238,10 @@ TEST(double_linked_list, T05_00)
     dlist_init_list(&dlist);
 
     dlist_add_node_at_tail(&dlist, &nodes[NODE_FIRST]);
-    dlist_cut_node(&dlist, &nodes[NODE_FIRST]);
+    dlist_cut_node(&nodes[NODE_FIRST]);
 
     LONGS_EQUAL(NULL, nodes[NODE_FIRST].p_next);
     LONGS_EQUAL(NULL, nodes[NODE_FIRST].p_prev);
+    LONGS_EQUAL(NULL, nodes[NODE_FIRST].p_list);
 }
 
