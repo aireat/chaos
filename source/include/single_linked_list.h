@@ -33,10 +33,7 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-VOID slist_init_list(P_SLIST_t p_list);
-VOID slist_add_node_at_head(P_SLIST_t p_list, P_SNODE_t p_add_node);
-VOID slist_add_node_at_tail(P_SLIST_t p_list, P_SNODE_t p_add_node);
-VOID slist_cut_node(P_SLIST_t p_list, P_SNODE_t p_cut_node);
+
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

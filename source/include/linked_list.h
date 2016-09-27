@@ -20,17 +20,22 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __DOUBLE_LINKED_LIST_H__
-#define __DOUBLE_LINKED_LIST_H__
+#ifndef __LINKED_LIST_H__
+#define __LINKED_LIST_H__
 
 #include "type.h"
-#include "type_list.h"
+#include "type_linked_list.h"
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
+
+VOID slist_init_list(P_SLIST_t p_list);
+VOID slist_add_node_at_head(P_SLIST_t p_list, P_SNODE_t p_add_node);
+VOID slist_add_node_at_tail(P_SLIST_t p_list, P_SNODE_t p_add_node);
+VOID slist_cut_node(P_SLIST_t p_list, P_SNODE_t p_cut_node);
 
 
 VOID dlist_init_list(P_DLIST_t p_list);
@@ -45,5 +50,5 @@ VOID dlist_cut_node(P_DLIST_t p_list, P_DNODE_t p_cut_node);
     } /* extern "C" */
 #endif
 
-#endif //__DOUBLE_LINKED_LIST_H__
+#endif //__LINKED_LIST_H__
 

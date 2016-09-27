@@ -20,10 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TYPE_LIST_H__
-#define __TYPE_LIST_H__
-
-#include "type.h"
+#include "linked_list.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,49 +29,86 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-/*======================================================================================*/
-/*
-    Single linked list (not circle)
-*/
-/*======================================================================================*/
-
-typedef struct _SNODE_
+VOID dlist_init_list(P_DLIST_t p_list)
 {
-    struct _SNODE_         *p_next;
+    p_list->p_head = NULL;
+    p_list->p_tail = NULL;
+}
 
-} SNODE_t, *P_SNODE_t;
 
-
-typedef struct
+VOID dlist_add_node_at_head(P_DLIST_t p_list, P_DNODE_t p_add_node)
 {
-    P_SNODE_t               p_head;
-    P_SNODE_t               p_tail;
+    P_DNODE_t   p_head_node = p_list->p_head;
 
-} SLIST_t, *P_SLIST_t;
+    if (p_head_node)
+    {
+        p_add_node->p_next = p_head_node;
+        p_add_node->p_prev = NULL;
+
+        p_head_node->p_prev = p_add_node;
+
+        p_list->p_head = p_add_node;
+    }
+    else
+    {
+        p_add_node->p_next = NULL;
+        p_add_node->p_prev = NULL;
+
+        p_list->p_head = p_add_node;
+        p_list->p_tail = p_add_node;
+    }
+
+    p_add_node->p_list = p_list;
+}
 
 
-/*======================================================================================*/
-/*
-    Double linked list (not circle)
-*/
-/*======================================================================================*/
-
-typedef struct _DNODE_
+VOID dlist_add_node_at_tail(P_DLIST_t p_list, P_DNODE_t p_add_node)
 {
-    struct _DNODE_         *p_next;
-    struct _DNODE_         *p_prev;
+    P_DNODE_t   p_tail_node = p_list->p_tail;
 
-    P_DLIST_t               p_list;
+    if (p_tail_node)
+    {
+        p_add_node->p_next = NULL;
+        p_add_node->p_prev = p_tail_node;
 
-} DNODE_t, *P_DNODE_t;
+        p_tail_node->p_next = p_add_node;
+
+        p_list->p_tail = p_add_node;
+    }
+    else
+    {
+        p_add_node->p_next = NULL;
+        p_add_node->p_prev = NULL;
+
+        p_list->p_head = p_add_node;
+        p_list->p_tail = p_add_node;
+    }
+
+    p_add_node->p_list = p_list;
+}
 
 
-typedef struct
+VOID dlist_cut_node(P_DLIST_t p_list, P_DNODE_t p_cut_node)
 {
-    P_DNODE_t               p_head;
-    P_DNODE_t               p_tail;
+    P_DNODE_t   p_next_node = p_cut_node->p_next;
+    P_DNODE_t   p_prev_node = p_cut_node->p_prev;
 
-} DLIST_t, *P_DLIST_t;
+    if (p_prev_node)
+        p_prev_node->p_next = p_cut_node->p_next;
+
+    if (p_next_node)
+        p_next_node->p_prev = p_cut_node->p_prev;
+
+    if (p_cut_node == p_list->p_head)
+        p_list->p_head = p_next_node;
+
+    if (p_cut_node == p_list->p_tail)
+        p_list->p_tail = p_prev_node;
+
+    p_cut_node->p_next = NULL;
+    p_cut_node->p_prev = NULL;
+    p_cut_node->p_list = NULL;
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -82,6 +116,4 @@ typedef struct
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__TYPE_LIST_H__
 

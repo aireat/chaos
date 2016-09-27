@@ -2,7 +2,7 @@
 
 #include "CppUTest/TestHarness.h"
 
-#include "single_linked_list.h"
+#include "linked_list.h"
 
 enum
 {
