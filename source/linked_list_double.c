@@ -88,26 +88,31 @@ VOID dlist_add_node_at_tail(P_DLIST_t p_list, P_DNODE_t p_add_node)
 }
 
 
-VOID dlist_cut_node(P_DLIST_t p_list, P_DNODE_t p_cut_node)
+VOID dlist_cut_node(P_DNODE_t p_cut_node)
 {
-    P_DNODE_t   p_next_node = p_cut_node->p_next;
-    P_DNODE_t   p_prev_node = p_cut_node->p_prev;
+    P_DLIST_t   p_list = (P_DLIST_t) p_cut_node->p_list;
 
-    if (p_prev_node)
-        p_prev_node->p_next = p_cut_node->p_next;
+    if (p_list)
+    {
+        P_DNODE_t   p_next_node = p_cut_node->p_next;
+        P_DNODE_t   p_prev_node = p_cut_node->p_prev;
 
-    if (p_next_node)
-        p_next_node->p_prev = p_cut_node->p_prev;
+        if (p_prev_node)
+            p_prev_node->p_next = p_cut_node->p_next;
 
-    if (p_cut_node == p_list->p_head)
-        p_list->p_head = p_next_node;
+        if (p_next_node)
+            p_next_node->p_prev = p_cut_node->p_prev;
 
-    if (p_cut_node == p_list->p_tail)
-        p_list->p_tail = p_prev_node;
+        if (p_cut_node == p_list->p_head)
+            p_list->p_head = p_next_node;
 
-    p_cut_node->p_next = NULL;
-    p_cut_node->p_prev = NULL;
-    p_cut_node->p_list = NULL;
+        if (p_cut_node == p_list->p_tail)
+            p_list->p_tail = p_prev_node;
+
+        p_cut_node->p_next = NULL;
+        p_cut_node->p_prev = NULL;
+        p_cut_node->p_list = NULL;
+    }
 }
 
 
