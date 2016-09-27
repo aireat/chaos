@@ -41,7 +41,7 @@ VOID slist_cut_node(P_SLIST_t p_list, P_SNODE_t p_cut_node);
 VOID dlist_init_list(P_DLIST_t p_list);
 VOID dlist_add_node_at_head(P_DLIST_t p_list, P_DNODE_t p_add_node);
 VOID dlist_add_node_at_tail(P_DLIST_t p_list, P_DNODE_t p_add_node);
-VOID dlist_cut_node(P_DLIST_t p_list, P_DNODE_t p_cut_node);
+VOID dlist_cut_node(P_DNODE_t p_cut_node);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
