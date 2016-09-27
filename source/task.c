@@ -30,11 +30,13 @@
 
 RESULT_t task_create(P_TASK_t p_task)
 {
+    p_task->stack_pos = 0;
     return RESULT_SUCCESS;
 }
 
 RESULT_t task_delete(P_TASK_t p_task)
 {
+    p_task->stack_pos = 0;
     return RESULT_SUCCESS;
 }
 

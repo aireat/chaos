@@ -11,7 +11,7 @@ enum
     NODE_MID_1          ,
     NODE_MID_2          ,
     NODE_LAST           ,
-    NODE_COUNT          ,
+    NODE_COUNT          
 };
 
 TEST_GROUP(double_linked_list)
@@ -28,7 +28,7 @@ TEST_GROUP(double_linked_list)
 
 TEST(double_linked_list, T01)
 {
-    DLIST_t     dlist = { (P_DNODE_t)1, };
+    DLIST_t     dlist = { (P_DNODE_t)1, 0 };
 
     dlist_init_list(&dlist);
 

@@ -11,7 +11,7 @@ enum
     NODE_MID_1          ,
     NODE_MID_2          ,
     NODE_LAST           ,
-    NODE_COUNT          ,
+    NODE_COUNT          
 };
 
 TEST_GROUP(single_linked_list)
@@ -28,7 +28,7 @@ TEST_GROUP(single_linked_list)
 
 TEST(single_linked_list, T01)
 {
-    SLIST_t     slist = { (P_SNODE_t)1, };
+    SLIST_t     slist = { (P_SNODE_t)1, 0 };
 
     slist_init_list(&slist);
 

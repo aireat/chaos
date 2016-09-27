@@ -6,6 +6,10 @@
         "command": "sh",
         "args": ["-c"]
     },
+    "osx": {
+        "command": "sh",
+        "args": ["-c"]
+    },
     "windows": {
         "command": "cmd",
         "args": ["/C"]

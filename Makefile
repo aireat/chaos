@@ -43,7 +43,7 @@ CPPUTEST_WARNINGFLAGS     += -Wnonnull
 CPPUTEST_WARNINGFLAGS     += -Wparentheses
 CPPUTEST_WARNINGFLAGS     += -Wreturn-type
 CPPUTEST_WARNINGFLAGS     += -Wsequence-point
-CPPUTEST_WARNINGFLAGS     += -Wstrict-aliasing -Wstrict-aliasing=3
+#CPPUTEST_WARNINGFLAGS     += -Wstrict-aliasing -Wstrict-aliasing=3
 CPPUTEST_WARNINGFLAGS     += -Wstrict-overflow -Wstrict-overflow=1
 CPPUTEST_WARNINGFLAGS     += -Wswitch
 CPPUTEST_WARNINGFLAGS     += -Wtrigraphs
@@ -54,7 +54,7 @@ CPPUTEST_WARNINGFLAGS     += -Wunused-label
 CPPUTEST_WARNINGFLAGS     += -Wunused-value
 CPPUTEST_WARNINGFLAGS     += -Wunused-variable
 CPPUTEST_WARNINGFLAGS     += -Wunused-value
-#CPPUTEST_WARNINGFLAGS     += -Wunused-parameter
+CPPUTEST_WARNINGFLAGS     += -Wunused-parameter
 CPPUTEST_WARNINGFLAGS     += -Wempty-body
 
 CPPUTEST_WARNINGFLAGS     += -Wmissing-noreturn
@@ -74,7 +74,7 @@ CPPUTEST_C_WARNINGFLAGS   += -Wimplicit-int
 CPPUTEST_C_WARNINGFLAGS   += -Wimplicit-function-declaration
 CPPUTEST_C_WARNINGFLAGS   += -Wpointer-sign
 CPPUTEST_C_WARNINGFLAGS   += -Wmissing-declarations
-CPPUTEST_C_WARNINGFLAGS   += -Wmissing-parameter-type
+#CPPUTEST_C_WARNINGFLAGS   += -Wmissing-parameter-type
 CPPUTEST_C_WARNINGFLAGS   += -Wmissing-prototypes
 CPPUTEST_C_WARNINGFLAGS   += -Wnested-externs
 
