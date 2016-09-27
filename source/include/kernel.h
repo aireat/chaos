@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __KERNEL_INCLUDE_H__
-#define __KERNEL_INCLUDE_H__
+#ifndef __KERNEL_H__
+#define __KERNEL_H__
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,11 +29,25 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+#include "config.h"
 
 #include "macros.h"
-#include "double_linked_list.h"
+#include "linked_list.h"
 #include "count_lead_zero.h"
 
+#include "chaos.h"
+
+#include "utility.h"
+
+typedef struct _KERNEL_
+{
+    UINT            system_tick;
+    
+    SLIST_t         list_creation;
+
+
+
+} KERNEL_t, *P_KERNEL_t;
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -41,5 +55,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__KERNEL_INCLUDE_H__
+#endif //__KERNEL_H__
 

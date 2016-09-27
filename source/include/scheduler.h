@@ -36,7 +36,7 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-typedef struct
+typedef struct _READY_
 {
     UINT32          flag;
 
@@ -44,20 +44,22 @@ typedef struct
 
 } READY_t, *P_READY_t;
 
-typedef struct
+typedef struct _BLOCK_
 {
     DLIST_t         list;
 
 } BLOCK_t, *P_BLOCK_t;
 
-typedef struct
+typedef struct _SCHEDULER_
 {
     BLOCK_t         block;
+    DLIST_t         timeout;
     READY_t         ready[2];
     
     P_READY_t       p_ready0, p_ready1;
 
 } SCHEDULER_t, *P_SCHEDULER_t;
+
 
 VOID _scheduler_init(VOID);
 UINT _scheduler_get_next_task(VOID);

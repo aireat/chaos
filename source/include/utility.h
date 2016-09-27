@@ -20,11 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TYPE_TASK_H__
-#define __TYPE_TASK_H__
+#ifndef __UTILITY_H__
+#define __UTILITY_H__
 
 #include "type.h"
-#include "type_linked_list.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,30 +31,9 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#define TASK_FLAG_NONE                  0
-#define TASK_FLAG_READY                 (1 <<  0)
-#define TASK_FLAG_READY1                (1 <<  1)
-#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2) 
-#define TASK_FALG_BLOCK                 (1 <<  3)
-#define TASK_FLAG_TIMEOUT               (1 <<  4)
-#define TASK_FLAG_TIMEOUT_OVEFLOW       (1 <<  5)
 
-typedef struct _TASK_
-{
-    UINT            stack_pos;          /*!< @brief Stack pointer                       */
+VOID _co_memset(VOID *p_memory, BYTE value, INT size);
 
-    SNODE_t         node_create;
-
-    DNODE_t         node_task;
-    DNODE_t         node_timeout;
-
-    UINT8           priority;
-
-    UINT            result;
-
-    VOID           *p_stack;
-
-} TASK_t, *P_TASK_t;
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -63,5 +41,5 @@ typedef struct _TASK_
     } /* extern "C" */
 #endif
 
-#endif //__TYPE_TASK_H__
+#endif //__UTILITY_H__
 

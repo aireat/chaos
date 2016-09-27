@@ -1,15 +1,16 @@
 // 키 바인딩을 이 파일에 넣어서 기본값을 덮어씁니다.
 [
+// Biild
     { "key": "shift+f7",                "command": "workbench.action.tasks.test" },
     { "key": "f7",                      "command": "workbench.action.tasks.build" },    
-    
+
+
 // EDITER
     { "key": "ctrl+shift+l",            "command": "editor.action.deleteLines",
                                         "when": "editorTextFocus && !editorReadonly" },
 
 
 // SAVE FILES
-
     { "key": "ctrl+s",                  "command": "workbench.action.files.save" },
     { "key": "ctrl+shift+s",            "command": "workbench.action.files.saveAll" }
 ]

@@ -45,7 +45,7 @@ typedef struct _SNODE_
 } SNODE_t, *P_SNODE_t;
 
 
-typedef struct
+typedef struct _SLIST_
 {
     P_SNODE_t               p_head;
     P_SNODE_t               p_tail;
