@@ -26,7 +26,7 @@
 #include "config.h"
 
 #include "type.h"
-#include "type_list.h"
+#include "type_linked_list.h"
 #include "type_task.h"
 
 #ifdef __cplusplus

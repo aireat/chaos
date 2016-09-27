@@ -24,7 +24,7 @@
 #define __TYPE_TASK_H__
 
 #include "type.h"
-#include "type_list.h"
+#include "type_linked_list.h"
 
 #ifdef __cplusplus
     extern "C" {
