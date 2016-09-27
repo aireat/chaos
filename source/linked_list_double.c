@@ -90,7 +90,7 @@ VOID dlist_add_node_at_tail(P_DLIST_t p_list, P_DNODE_t p_add_node)
 
 VOID dlist_cut_node(P_DNODE_t p_cut_node)
 {
-    P_DLIST_t   p_list = (P_DLIST_t) p_cut_node->p_list;
+    P_DLIST_t   p_list = p_cut_node->p_list;
 
     if (p_list)
     {

@@ -64,15 +64,15 @@ typedef struct _DNODE_
     struct _DNODE_         *p_next;
     struct _DNODE_         *p_prev;
 
-    VOID                   *p_list;
+    struct _DLIST_         *p_list;
 
 } DNODE_t, *P_DNODE_t;
 
 
-typedef struct
+typedef struct _DLIST_
 {
-    P_DNODE_t               p_head;
-    P_DNODE_t               p_tail;
+    struct _DNODE_         *p_head;
+    struct _DNODE_         *p_tail;
 
 } DLIST_t, *P_DLIST_t;
 
