@@ -63,6 +63,7 @@ CPPUTEST_WARNINGFLAGS     += -Wtype-limits
 CPPUTEST_WARNINGFLAGS     += -Wshadow
 CPPUTEST_WARNINGFLAGS     += -Wno-endif-labels
 CPPUTEST_WARNINGFLAGS     += -Wunreachable-code
+CPPUTEST_WARNINGFLAGS     += -Wno-write-strings
 
 
 CPPUTEST_CXX_WARNINGFLAGS += -Wreorder

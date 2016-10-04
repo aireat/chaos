@@ -19,9 +19,10 @@ TEST_GROUP(task)
 
 TEST(task, T01)
 {
-    TASK_t      task;
+    TASK_DEF(task, 0, 10);
+    //TASK_t      task;
 
-    LONGS_EQUAL(task_create(&task), RESULT_SUCCESS);
+    LONGS_EQUAL(task_create(&task, 0, 0), RESULT_SUCCESS);
 }
 
 TEST(task, T02)

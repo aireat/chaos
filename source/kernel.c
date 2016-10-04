@@ -41,8 +41,11 @@ VOID _knl_init(VOID)
     _utl_memset(&g_kernel, 0x00, sizeof(g_kernel));
 }
 
-VOID _knl_task_create(P_TASK_t p_task)
+VOID _knl_task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
 {
+    entry_point = 0;
+    p_arg = NULL;
+    
     slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
 
     _sch_make_ready(p_task);

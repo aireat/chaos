@@ -31,14 +31,22 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+/*======================================================================================*/
+/*
+    Get size aligned by boundary
+*/
+/*======================================================================================*/
+#ifndef _CO_ALIGN
+#define _CO_ALIGN(value, align)         (((value)+((align)-1))&~((align)-1))
+#endif
 
 /*======================================================================================*/
 /*
     Get offset from start address of structure
 */
 /*======================================================================================*/
-#ifndef CO_GET_OFFSET
-#define CO_GET_OFFSET(type, member)      ((long)&(((type*)0)->member))
+#ifndef _CO_OFFSET
+#define _CO_OFFSET(type, member)        ((long)&(((type*)0)->member))
 #endif
 
 
@@ -47,8 +55,8 @@
     Cast address from a member of type to start of type
 */
 /*======================================================================================*/
-#ifndef CO_GET_TYPE
-#define CO_GET_TYPE(type, member, addr) (type*)(((char*)(addr))-(long)&(((type*)0)->member))
+#ifndef _CO_TYPE
+#define _CO_TYPE(type, member, addr)    (type*)(((char*)(addr))-(long)&(((type*)0)->member))
 #endif
 
 
@@ -57,8 +65,8 @@
     Get maximum value
 */
 /*======================================================================================*/
-#ifndef CO_MAX
-#define CO_MAX(x,y)     (((UINT)(x)>(UINT)(y))?(x):(y))
+#ifndef _CO_MAX
+#define _CO_MAX(x,y)                    (((UINT)(x)>(UINT)(y))?(x):(y))
 #endif
 
 
@@ -67,8 +75,8 @@
     Get minimum value
 */
 /*======================================================================================*/
-#ifndef CO_MIN
-#define CO_MIN(x,y)     (((UINT)(x)>(UINT)(y))?(y):(x))
+#ifndef _CO_MIN
+#define _CO_MIN(x,y)                    (((UINT)(x)>(UINT)(y))?(y):(x))
 #endif
 
 /*======================================================================================*/
@@ -76,9 +84,10 @@
     Get count of array elements
 */
 /*======================================================================================*/
-#ifndef CO_ARRAY_COUNT
-#define CO_ARRAY_COUNT(arr)     (sizeof(arr)/sizeof(arr[0]))
+#ifndef _CO_ARRAY_COUNT
+#define _CO_ARRAY_COUNT(arr)            (sizeof(arr)/sizeof(arr[0]))
 #endif
+
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

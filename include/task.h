@@ -20,11 +20,12 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __KERNEL_INCLUDE_H__
-#define __KERNEL_INCLUDE_H__
+#ifndef __TASK_H__
+#define __TASK_H__
 
 #include "type_task.h"
 #include "type_result.h"
+#include "macros.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -34,12 +35,78 @@
 
 /*======================================================================================*/
 /*
+    Creation Macro of TASK_t
+*/
+/*======================================================================================*/
+#define TASK_DEF(name, priority, stack_size)                                            \
+        UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                                 \
+        TASK_t  name =                                                                  \
+        {                                                                               \
+            0,                          /* stack_pos                */                  \
+            #name,                      /* p_name                   */                  \
+            { NULL },                   /* snode_create             */                  \
+            { NULL, NULL, NULL },       /* node_task                */                  \
+            { NULL, NULL, NULL },       /* node_timeout             */                  \
+            0,                          /* flag                     */                  \
+            priority,                   /* priority                 */                  \
+            0,                          /* result                   */                  \
+            _CO_ALIGN(stack_size, 4),   /* stack_size               */                  \
+            (UINT*)name##_stack,        /* stack_addr               */                  \
+        }
+
+
+/*======================================================================================*/
+/*
+    Definition of TASK's flag
+*/
+/*======================================================================================*/
+
+#define TASK_FLAG_NONE                  0
+#define TASK_FLAG_READY                 (1 <<  0)
+#define TASK_FLAG_READY1                (1 <<  1)
+#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2) 
+#define TASK_FALG_BLOCK                 (1 <<  3)
+#define TASK_FLAG_TIMEOUT               (1 <<  4)
+#define TASK_FLAG_TIMEOUT_OVEFLOW       (1 <<  5)
+
+
+/*======================================================================================*/
+/*
+    Control block of Task 
+*/
+/*======================================================================================*/
+
+typedef struct _TASK_
+{
+    UINT            stack_pos;          /*!< @brief Stack pointer                       */
+
+    CHAR           *name;
+
+    SNODE_t         snode_create;
+    DNODE_t         node_task;
+    DNODE_t         node_timeout;
+
+    INT             flag;
+
+    UINT8           priority;
+
+    UINT            result;
+
+    INT             stack_size;
+    UINT           *stack_addr;
+
+} TASK_t, *P_TASK_t;
+
+
+/*======================================================================================*/
+/*
     The entry point of thread creating
 */
 /*======================================================================================*/
+
 typedef INT (*P_TASK_PROC_t)(VOID *p_arg);
 
-RESULT_t task_create(P_TASK_t p_task);
+RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
 
 RESULT_t task_delete(P_TASK_t p_task);
 
@@ -56,5 +123,5 @@ RESULT_t task_delete(P_TASK_t p_task);
     } /* extern "C" */
 #endif
 
-#endif //__KERNEL_INCLUDE_H__
+#endif //__TASK_H__
 

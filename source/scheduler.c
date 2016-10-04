@@ -28,46 +28,41 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-static SCHEDULER_t      g_scheduler;
 
 #define READY_FLAG_SET(p_ready, priority)                                                \
         {                                                                                \
-            (p_ready)->flag |= (1 << (31 - priority));                                   \
+            (p_ready)->flag |= (UINT32)(1 << (31 - priority));                                   \
         }
 
 #define READY_FLAG_CLEAR(p_ready, priority)                                              \
         {                                                                                \
             if (!(p_ready)->list[priority].p_head)                                       \
-                (p_ready)->flag &= ~(1 << (31 - priority));                              \
+                (p_ready)->flag &= (UINT32)~(1 << (31 - priority));                              \
         }
 
-VOID _sch_init(VOID)
-{
-    _co_memset(&g_scheduler, 0x00, sizeof(g_scheduler));
-}
 
 UINT _sch_get_next_task(VOID)
 {
     P_TASK_t    p_task;
 
     // exist ready task
-    if (g_scheduler.p_ready0->flag)
+    if (g_kernel.sch.p_ready0->flag)
     {
         INT         priority;
         P_DLIST_t   p_list;
 
-        priority = count_lead_zero(g_scheduler.p_ready0->flag);
-        p_list   = &(g_scheduler.p_ready0->list[priority]);
+        priority = count_lead_zero(g_kernel.sch.p_ready0->flag);
+        p_list   = &(g_kernel.sch.p_ready0->list[priority]);
 
-        p_task = p_list->head;
-        dlist_cut_node(p_task);
-        READY_FLAG_CLEAR(g_scheduler.p_ready0, priority);
+        p_task = _CO_TYPE(TASK_t, node_task, p_list->p_head);
+        dlist_cut_node(&(p_task->node_task));
+        READY_FLAG_CLEAR(g_kernel.sch.p_ready0, priority);
 
-        dlist_add_node_at_tail(&(g_scheduler.p_ready1->list[priority]),
+        dlist_add_node_at_tail(&(g_kernel.sch.p_ready1->list[priority]),
                                &(p_task->node_task));
-        READY_FLAG_SET(g_scheduler.p_ready1, priority);
+        READY_FLAG_SET(g_kernel.sch.p_ready1, priority);
 
-        if (g_scheduler.p_ready0 == &(g_scheduler.ready[0]))
+        if (g_kernel.sch.p_ready0 == &(g_kernel.sch.ready[0]))
             p_task->flag &= ~(TASK_FLAG_READY1);
         else
             p_task->flag |= TASK_FLAG_READY1;
@@ -91,32 +86,33 @@ VOID _sch_make_ready(P_TASK_t p_task)
     //
     // make a task free
     //
-    _scheduler_make_free(p_task);
+    _sch_make_free(p_task);
 
     //
     // add task in ready list
     //
     {
         // add task into list
-        dlist_add_node_at_tail(&(g_scheduler.p_ready0->list[p_task->priority]), 
+        dlist_add_node_at_tail(&(g_kernel.sch.p_ready0->list[p_task->priority]), 
                                &(p_task->node_task));
 
         // set flag to indicate added task
-        READY_FLAG_SET(g_scheduler.p_ready0, p_task->priority);
+        READY_FLAG_SET(g_kernel.sch.p_ready0, p_task->priority);
     }
 
-    if (g_scheduler.p_ready0 == &(g_scheduler.ready[0]))
+    if (g_kernel.sch.p_ready0 == &(g_kernel.sch.ready[0]))
         p_task->flag |= (TASK_FLAG_READY | TASK_FLAG_READY1);
     else
         p_task->flag |= TASK_FLAG_READY;
 }
 
-VOID _sch_make_block(P_TASK_t p_task, UINT time_ms)
+/*
+VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms)
 {
     //
     // make a task free
     //
-    _scheduler_make_free(p_task);
+    _sch_make_free(p_task);
 
     //
     // add task in timeout list
@@ -128,7 +124,7 @@ VOID _sch_make_block(P_TASK_t p_task, UINT time_ms)
         if (p_task->result <= g_kernel.system_tick)
             p_task->flag |= TASK_FLAG_TIMEOUT_OVEFLOW;
 
-        dlist_add_node_at_tail(&(g_scheduler.timeout),
+        dlist_add_node_at_tail(&(g_kernel.sch.timeout),
                                &(p_task->node_timeout));
 
         p_task->flag |= TASK_FLAG_TIMEOUT;
@@ -136,6 +132,7 @@ VOID _sch_make_block(P_TASK_t p_task, UINT time_ms)
 
     p_task->flag |= TASK_FALG_BLOCK;
 }
+*/
 
 VOID _sch_make_free(P_TASK_t p_task)
 {
@@ -145,7 +142,7 @@ VOID _sch_make_free(P_TASK_t p_task)
         if (p_task->flag & TASK_FLAG_READY)
         {
             INT         priority = p_task->priority;
-            P_READY_t   p_ready  = &(g_scheduler.ready[0]);
+            P_READY_t   p_ready  = &(g_kernel.sch.ready[0]);
 
             if (p_task->flag & TASK_FLAG_READY1)
                 p_ready++;
@@ -177,7 +174,7 @@ VOID _sch_change_priority(P_TASK_t p_task)
         return;
 
     // get ready list
-    p_ready  = &(g_scheduler.ready[0]);
+    p_ready  = &(g_kernel.sch.ready[0]);
     if (p_task->flag & TASK_FLAG_READY1)
         p_ready++;
 

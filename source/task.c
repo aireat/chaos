@@ -28,9 +28,11 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-RESULT_t task_create(P_TASK_t p_task)
+RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
 {
     p_task->stack_pos = 0;
+    entry_point = 0;
+    p_arg = NULL;
     return RESULT_SUCCESS;
 }
 

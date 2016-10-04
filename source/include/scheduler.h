@@ -23,11 +23,8 @@
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "config.h"
-
 #include "type.h"
-#include "type_linked_list.h"
-#include "type_task.h"
+#include "task.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -38,7 +35,7 @@
 
 typedef struct _READY_
 {
-    UINT32          flag;
+    UINT32           flag;
 
     DLIST_t         list[_MAXIMUM_PRIORITY];
 
@@ -64,7 +61,7 @@ typedef struct _SCHEDULER_
 VOID _sch_init(VOID);
 UINT _sch_get_next_task(VOID);
 VOID _sch_make_ready(P_TASK_t p_task);
-VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);
+//VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);
 VOID _sch_make_free(P_TASK_t p_task);
 VOID _sch_change_priority(P_TASK_t p_task);
 

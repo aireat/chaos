@@ -48,13 +48,15 @@ typedef struct _KERNEL_
     SLIST_t         slist_task;
     SLIST_t         slist_resource;
 
+    SCHEDULER_t     sch;
 
 } KERNEL_t, *P_KERNEL_t;
 
 
 extern KERNEL_t     g_kernel;
 
-VOID _knl_task_create(P_TASK_t p_task);
+VOID _knl_init(VOID);
+VOID _knl_task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
 VOID _knl_task_delete(P_TASK_t p_task);
 
 
