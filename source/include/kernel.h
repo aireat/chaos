@@ -31,9 +31,11 @@
 
 #include "config.h"
 
+#include "type.h"
 #include "macros.h"
 #include "linked_list.h"
 #include "count_lead_zero.h"
+#include "scheduler.h"
 
 #include "chaos.h"
 
@@ -43,11 +45,18 @@ typedef struct _KERNEL_
 {
     UINT            system_tick;
     
-    SLIST_t         list_creation;
-
+    SLIST_t         slist_task;
+    SLIST_t         slist_resource;
 
 
 } KERNEL_t, *P_KERNEL_t;
+
+
+extern KERNEL_t     g_kernel;
+
+VOID _knl_task_create(P_TASK_t p_task);
+VOID _knl_task_delete(P_TASK_t p_task);
+
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

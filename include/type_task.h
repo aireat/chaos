@@ -44,7 +44,7 @@ typedef struct _TASK_
 {
     UINT            stack_pos;          /*!< @brief Stack pointer                       */
 
-    SNODE_t         node_create;
+    SNODE_t         snode_create;
 
     DNODE_t         node_task;
     DNODE_t         node_timeout;

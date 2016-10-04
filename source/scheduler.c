@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "scheduler.h"
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,7 +28,6 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-static KERNEL_t         g_kernel;
 static SCHEDULER_t      g_scheduler;
 
 #define READY_FLAG_SET(p_ready, priority)                                                \
@@ -42,12 +41,12 @@ static SCHEDULER_t      g_scheduler;
                 (p_ready)->flag &= ~(1 << (31 - priority));                              \
         }
 
-VOID _scheduler_init(VOID)
+VOID _sch_init(VOID)
 {
     _co_memset(&g_scheduler, 0x00, sizeof(g_scheduler));
 }
 
-UINT _scheduler_get_next_task(VOID)
+UINT _sch_get_next_task(VOID)
 {
     P_TASK_t    p_task;
 
@@ -87,7 +86,7 @@ UINT _scheduler_get_next_task(VOID)
 //
 // 현제 ready 정보에 task를 설정한다.
 //
-VOID _scheduler_make_ready(P_TASK_t p_task)
+VOID _sch_make_ready(P_TASK_t p_task)
 {
     //
     // make a task free
@@ -112,7 +111,7 @@ VOID _scheduler_make_ready(P_TASK_t p_task)
         p_task->flag |= TASK_FLAG_READY;
 }
 
-VOID _scheduler_make_block(P_TASK_t p_task, UINT time_ms)
+VOID _sch_make_block(P_TASK_t p_task, UINT time_ms)
 {
     //
     // make a task free
@@ -138,7 +137,7 @@ VOID _scheduler_make_block(P_TASK_t p_task, UINT time_ms)
     p_task->flag |= TASK_FALG_BLOCK;
 }
 
-VOID _scheduler_make_free(P_TASK_t p_task)
+VOID _sch_make_free(P_TASK_t p_task)
 {
     // cut node_task of task
     if (p_task->node_task.p_list)
@@ -169,7 +168,7 @@ VOID _scheduler_make_free(P_TASK_t p_task)
     p_task->flag = TASK_FLAG_NONE;
 }
 
-VOID _scheduler_change_priority(P_TASK_t p_task)
+VOID _sch_change_priority(P_TASK_t p_task)
 {
     INT         priority;
     P_READY_t   p_ready;

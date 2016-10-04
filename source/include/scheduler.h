@@ -61,12 +61,12 @@ typedef struct _SCHEDULER_
 } SCHEDULER_t, *P_SCHEDULER_t;
 
 
-VOID _scheduler_init(VOID);
-UINT _scheduler_get_next_task(VOID);
-VOID _scheduler_make_ready(P_TASK_t p_task);
-VOID _scheduler_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);
-VOID _scheduler_make_free(P_TASK_t p_task);
-VOID _scheduler_change_priority(P_TASK_t p_task);
+VOID _sch_init(VOID);
+UINT _sch_get_next_task(VOID);
+VOID _sch_make_ready(P_TASK_t p_task);
+VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);
+VOID _sch_make_free(P_TASK_t p_task);
+VOID _sch_change_priority(P_TASK_t p_task);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

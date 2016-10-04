@@ -20,11 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __SINGLE_LINKED_LIST_H__
-#define __SINGLE_LINKED_LIST_H__
-
-#include "type.h"
-#include "type_list.h"
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -33,7 +29,31 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
+/*======================================================================================*/
+/*
+    Global variable
+*/
+/*======================================================================================*/
+KERNEL_t     g_kernel;
 
+VOID _knl_init(VOID)
+{
+    _utl_memset(&g_kernel, 0x00, sizeof(g_kernel));
+}
+
+VOID _knl_task_create(P_TASK_t p_task)
+{
+    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
+
+    _sch_make_ready(p_task);
+}
+
+VOID _knl_task_delete(P_TASK_t p_task)
+{
+    _sch_make_free(p_task);
+    
+    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -41,6 +61,4 @@
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__SINGLE_LINKED_LIST_H__
 
