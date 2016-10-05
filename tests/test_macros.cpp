@@ -2,7 +2,7 @@
 
 #include "CppUTest/TestHarness.h"
 
-#include "macros.h"
+#include "co_macros.h"
 
 #pragma pack(1)
 struct TEMP_STRUCT

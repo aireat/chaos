@@ -39,6 +39,8 @@ KERNEL_t     g_kernel;
 VOID _knl_init(VOID)
 {
     _utl_memset(&g_kernel, 0x00, sizeof(g_kernel));
+
+    g_kernel.sch.p_ready0 = g_kernel.sch.ready;
 }
 
 VOID _knl_task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)

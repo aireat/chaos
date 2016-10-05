@@ -32,14 +32,12 @@
 #include "config.h"
 
 #include "type.h"
-#include "macros.h"
-#include "linked_list.h"
-#include "count_lead_zero.h"
+#include "clz_func.h"
 #include "scheduler.h"
+#include "utility.h"
 
 #include "chaos.h"
 
-#include "utility.h"
 
 typedef struct _KERNEL_
 {

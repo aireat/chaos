@@ -20,12 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TASK_H__
-#define __TASK_H__
+#ifndef __MACROS_H__
+#define __MACROS_H__
 
-#include "type_task.h"
-#include "type_result.h"
-#include "macros.h"
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -35,86 +33,60 @@
 
 /*======================================================================================*/
 /*
-    Creation Macro of TASK_t
+    Get size aligned by boundary
 */
 /*======================================================================================*/
-#define TASK_DEF(name, priority, stack_size)                                            \
-        UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                                 \
-        TASK_t  name =                                                                  \
-        {                                                                               \
-            0,                          /* stack_pos                */                  \
-            #name,                      /* p_name                   */                  \
-            { NULL },                   /* snode_create             */                  \
-            { NULL, NULL, NULL },       /* node_task                */                  \
-            { NULL, NULL, NULL },       /* node_timeout             */                  \
-            0,                          /* flag                     */                  \
-            priority,                   /* priority                 */                  \
-            0,                          /* result                   */                  \
-            _CO_ALIGN(stack_size, 4),   /* stack_size               */                  \
-            (UINT*)name##_stack,        /* stack_addr               */                  \
-        }
+#ifndef _CO_ALIGN
+#define _CO_ALIGN(value, align)         (((value)+((align)-1))&~((align)-1))
+#endif
+
+/*======================================================================================*/
+/*
+    Get offset from start address of structure
+*/
+/*======================================================================================*/
+#ifndef _CO_OFFSET
+#define _CO_OFFSET(type, member)        ((long)&(((type*)0)->member))
+#endif
 
 
 /*======================================================================================*/
 /*
-    Definition of TASK's flag
+    Cast address from a member of type to start of type
 */
 /*======================================================================================*/
-
-#define TASK_FLAG_NONE                  0
-#define TASK_FLAG_READY                 (1 <<  0)
-#define TASK_FLAG_READY1                (1 <<  1)
-#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2) 
-#define TASK_FALG_BLOCK                 (1 <<  3)
-#define TASK_FLAG_TIMEOUT               (1 <<  4)
-#define TASK_FLAG_TIMEOUT_OVEFLOW       (1 <<  5)
+#ifndef _CO_TYPE
+#define _CO_TYPE(type, member, addr)    (type*)(((char*)(addr))-(long)&(((type*)0)->member))
+#endif
 
 
 /*======================================================================================*/
 /*
-    Control block of Task 
+    Get maximum value
 */
 /*======================================================================================*/
-
-typedef struct _TASK_
-{
-    UINT            stack_pos;          /*!< @brief Stack pointer                       */
-
-    CHAR           *name;
-
-    SNODE_t         snode_create;
-    DNODE_t         node_task;
-    DNODE_t         node_timeout;
-
-    INT             flag;
-
-    UINT8           priority;
-
-    UINT            result;
-
-    INT             stack_size;
-    UINT           *stack_addr;
-
-} TASK_t, *P_TASK_t;
+#ifndef _CO_MAX
+#define _CO_MAX(x,y)                    (((x)>(y))?(x):(y))
+#endif
 
 
 /*======================================================================================*/
 /*
-    The entry point of thread creating
+    Get minimum value
 */
 /*======================================================================================*/
+#ifndef _CO_MIN
+#define _CO_MIN(x,y)                    (((x)>(y))?(y):(x))
+#endif
 
-typedef INT (*P_TASK_PROC_t)(VOID *p_arg);
-
-RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
-
-RESULT_t task_delete(P_TASK_t p_task);
-
-//VOID task_block(P_TASK_t p_task);
-
-//VOID task_ready(P_TASK_t p_task);
-
-//VOID task_sleep(P_TASK_t p_task);
+/*======================================================================================*/
+/*
+    Get count of array elements
+*/
+/*======================================================================================*/
+#ifndef _CO_ARRAY_COUNT
+#define _CO_ARRAY_COUNT(arr)            (sizeof(arr)/sizeof(arr[0]))
+#endif
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -123,5 +95,5 @@ RESULT_t task_delete(P_TASK_t p_task);
     } /* extern "C" */
 #endif
 
-#endif //__TASK_H__
+#endif //__MACROS_H__
 

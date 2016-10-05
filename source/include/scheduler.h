@@ -23,8 +23,8 @@
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "type.h"
-#include "task.h"
+#include "config.h"
+#include "chaos.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -35,30 +35,27 @@
 
 typedef struct _READY_
 {
-    UINT32           flag;
-
+    INT             flag;
     DLIST_t         list[_MAXIMUM_PRIORITY];
 
 } READY_t, *P_READY_t;
 
-typedef struct _BLOCK_
-{
-    DLIST_t         list;
-
-} BLOCK_t, *P_BLOCK_t;
-
 typedef struct _SCHEDULER_
 {
-    BLOCK_t         block;
     DLIST_t         timeout;
+
+#if (_ENABLE_FAIR_SCHEDULING)
     READY_t         ready[2];
-    
     P_READY_t       p_ready0, p_ready1;
+#else
+    READY_t         ready[1];
+    P_READY_t       p_ready0;
+#endif
+
 
 } SCHEDULER_t, *P_SCHEDULER_t;
 
 
-VOID _sch_init(VOID);
 UINT _sch_get_next_task(VOID);
 VOID _sch_make_ready(P_TASK_t p_task);
 //VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);

@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TYPE_RESULT_H__
-#define __TYPE_RESULT_H__
+#ifndef __CO_RESULT_H__
+#define __CO_RESULT_H__
 
 #include "type.h"
 
@@ -45,5 +45,5 @@ typedef enum
     } /* extern "C" */
 #endif
 
-#endif //__TYPE_RESULT_H__
+#endif //__CO_RESULT_H__
 

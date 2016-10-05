@@ -20,10 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __COUNT_LEAD_ZERO_H__
-#define __COUNT_LEAD_ZERO_H__
+#ifndef __CLZ_FUNC_H__
+#define __CLZ_FUNC_H__
 
-#include "type.h"
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -31,11 +31,6 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#if   defined (__CLZ_ARM__)
-#define __IMPLE_CLZ_ARM__
-#else
-#define __IMPLE_CLZ_SW__
-#endif
 
 /*======================================================================================*/
 /*
@@ -86,7 +81,13 @@
 ------------------------------------------------------------------------------------------
 */
 
-INT  count_lead_zero(UINT32 value);
+#if (_IMPLEMENT_CLZ_BY_SW == 1)
+    INT  clz_func(INT32 value);
+
+#else
+    #define clz_func(value)                 (INT)__clz(value)
+
+#endif
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -95,5 +96,5 @@ INT  count_lead_zero(UINT32 value);
     } /* extern "C" */
 #endif
 
-#endif //__COUNT_LEAD_ZERO_H__
+#endif //__CLZ_FUNC_H__
 

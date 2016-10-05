@@ -2,7 +2,7 @@
 
 #include "CppUTest/TestHarness.h"
 
-#include "task.h"
+#include "co_task.h"
 
 
 TEST_GROUP(task)
@@ -19,7 +19,7 @@ TEST_GROUP(task)
 
 TEST(task, T01)
 {
-    TASK_DEF(task, 0, 10);
+    DEF_TASK(task, 0, 10);
     //TASK_t      task;
 
     LONGS_EQUAL(task_create(&task, 0, 0), RESULT_SUCCESS);

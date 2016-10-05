@@ -38,9 +38,17 @@
 */
 /*======================================================================================*/
 #ifndef _MAXIMUM_PRIORITY
-#define _MAXIMUM_PRIORITY       1
+#define _MAXIMUM_PRIORITY               1
 #endif
 
+#ifndef _ENABLE_FAIR_SCHEDULING
+#define _ENABLE_FAIR_SCHEDULING         0
+#endif
+
+
+#ifndef _IMPLEMENT_CLZ_BY_SW
+#define _IMPLEMENT_CLZ_BY_SW            1
+#endif
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

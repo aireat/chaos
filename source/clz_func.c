@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "count_lead_zero.h"
+#include "clz_func.h"
 
 
 #ifdef __cplusplus
@@ -29,7 +29,7 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#ifdef __IMPLE_CLZ_SW__
+#if (_IMPLEMENT_CLZ_BY_SW == 1)
 
 /*
 ------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ static CONST INT8  g_byte_clz_table[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-INT  count_lead_zero(UINT32 value)
+INT  clz_func(INT32 value)
 {
     INT     byte_value, i, add;
 
@@ -77,6 +77,9 @@ INT  count_lead_zero(UINT32 value)
         if (byte_value)
             return (g_byte_clz_table[byte_value] + add);
     }
+
+    return 32;
+
 #else
     //
     // check 0xFF000000
@@ -105,22 +108,13 @@ INT  count_lead_zero(UINT32 value)
     byte_value = ((value      ) & 0xFF);
     if (byte_value)
         return (g_byte_clz_table[byte_value] + 24);
-#endif
 
     return 32;
+
+#endif
 }
 
-#endif //__IMPLE_CLZ_SW__
-
-#ifdef __IMPLE_CLZ_ARM__
-
-INT  count_lead_zero(UINT32 value)
-{
-    return (INT)__clz(value);
-}
-
-#endif // __IMPLE_CLZ_ARM__
-
+#endif //_IMPLEMENT_CLZ_BY_SW
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
