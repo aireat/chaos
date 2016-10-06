@@ -2,7 +2,8 @@
 
 #include "CppUTest/TestHarness.h"
 
-#include "co_task.h"
+#define _ENABLE_STACK_TRACE 1
+#include "kernel.h"
 
 
 TEST_GROUP(task)
@@ -19,11 +20,13 @@ TEST_GROUP(task)
 
 TEST(task, T01)
 {
-    DEF_TASK(task, 0, 10);
+    DEF_TASK(task1, 0, 10);
     //TASK_t      task;
 
-    LONGS_EQUAL(task_create(&task, 0, 0), RESULT_SUCCESS);
+    _knl_init();
+    LONGS_EQUAL(task_create(&task1, 0, 0), RESULT_SUCCESS);
 }
+
 
 TEST(task, T02)
 {

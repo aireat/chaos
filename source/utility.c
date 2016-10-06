@@ -28,7 +28,7 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-VOID _utl_memset(VOID *p_memory, BYTE value, INT size)
+VOID _co_memset(VOID *p_memory, BYTE value, INT size)
 {
     BYTE    *p_data = (BYTE*) p_memory;
 

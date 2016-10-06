@@ -50,6 +50,10 @@
 #define _IMPLEMENT_CLZ_BY_SW            1
 #endif
 
+#ifndef _ENABLE_STACK_TRACE
+#define _ENABLE_STACK_TRACE             1
+#endif
+
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus

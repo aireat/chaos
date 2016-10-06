@@ -36,9 +36,13 @@
 /*======================================================================================*/
 KERNEL_t     g_kernel;
 
+#if (_ENABLE_STACK_TRACE)
+VOID _knl_stack_usage(P_TASK_t p_task);
+#endif
+
 VOID _knl_init(VOID)
 {
-    _utl_memset(&g_kernel, 0x00, sizeof(g_kernel));
+    _co_memset(&g_kernel, 0x00, sizeof(g_kernel));
 
     g_kernel.sch.p_ready0 = g_kernel.sch.ready;
 }
@@ -58,6 +62,47 @@ VOID _knl_task_delete(P_TASK_t p_task)
     _sch_make_free(p_task);
     
     slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
+}
+
+#if (_ENABLE_STACK_TRACE)
+VOID _knl_stack_usage(P_TASK_t p_task)
+{
+//#if (_STACK_GROWS == GROW_DOWN)
+    {
+        while (*(p_task->stack_size_trace)-- != 0xCCCCCCCC)
+            p_task->stack_size_usage += 4;
+    }
+//#else
+    {
+        while (*(p_task->stack_size_trace)++ != 0xCCCCCCCC)
+            p_task->stack_size_usage += 4;
+    }    
+//#endif
+
+}
+#endif
+
+VOID _knl_check_changes(VOID)
+{
+    // check timeout node
+    if (g_kernel.system_tick != g_kernel.system_tick_check)
+    {
+        P_TASK_t    p_task;
+        P_DNODE_t   p_dnoe_timeout = g_kernel.sch.timeout.p_head;
+
+        while (p_dnode_timeout)
+        {
+            p_task = _CO_TYPE(TASK_t, dnode_timeout, p_dnode_timeout);
+            p_dnode_timeout = p_dnode_timeout->p_next;
+
+            
+        }
+
+        g_kernel.system_tick_check = g_kernel.system_tick;
+    }
+
+    // check resources
+    // TODO : ring-buffer machanism
 }
 
 

@@ -156,9 +156,9 @@ VOID _sch_make_block(P_TASK_t p_task, OBJECT_t wait_obj, UINT time_ms)
     // add task in timeout list
     if (time_ms > 0)
     {
-        p_task->result = g_kernel.system_tick + time_ms;
+        p_task->scratch = g_kernel.system_tick + time_ms;
 
-        if (p_task->result <= g_kernel.system_tick)
+        if (p_task->scratch <= g_kernel.system_tick)
             p_task->flag |= TASK_FLAG_TIMEOUT_OVEFLOW;
 
         dlist_add_node_at_tail(&(g_kernel.sch.timeout),

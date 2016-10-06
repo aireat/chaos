@@ -34,7 +34,12 @@ RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
     p_task->priority = (INT8)(_CO_MIN((p_task->priority), 
                                       (_MAXIMUM_PRIORITY)) - 1);
 
-    p_task->stack_pos = 0;
+    // make specific pattern in stack for traceing
+    _co_memset(p_task->stack_addr, 0xCC, p_task->scratch);
+
+    // make ready
+    _knl_task_create(p_task, entry_point, p_arg);
+
     entry_point = 0;
     p_arg = NULL;
     return RESULT_SUCCESS;
@@ -42,7 +47,7 @@ RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
 
 RESULT_t task_delete(P_TASK_t p_task)
 {
-    p_task->stack_pos = 0;
+    p_task->scratch = 0;
     return RESULT_SUCCESS;
 }
 

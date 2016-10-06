@@ -58,7 +58,7 @@ CPPUTEST_WARNINGFLAGS     += -Wunused-parameter
 CPPUTEST_WARNINGFLAGS     += -Wempty-body
 
 CPPUTEST_WARNINGFLAGS     += -Wmissing-noreturn
-CPPUTEST_WARNINGFLAGS     += -Wconversion
+#CPPUTEST_WARNINGFLAGS     += -Wconversion
 CPPUTEST_WARNINGFLAGS     += -Wtype-limits
 CPPUTEST_WARNINGFLAGS     += -Wshadow
 CPPUTEST_WARNINGFLAGS     += -Wno-endif-labels

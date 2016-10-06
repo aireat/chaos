@@ -40,21 +40,40 @@
     Creation Macro of TASK_t
 */
 /*======================================================================================*/
-#define DEF_TASK(name, priority, stack_size)                                            \
-        UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                                 \
-        TASK_t  name =                                                                  \
-        {                                                                               \
-            0,                          /* stack_pos                */                  \
-            #name,                      /* p_name                   */                  \
-            { NULL },                   /* snode_create             */                  \
-            { NULL, NULL, NULL },       /* dnode_task               */                  \
-            { NULL, NULL, NULL },       /* dnode_timeout            */                  \
-            0,                          /* flag                     */                  \
-            priority,                   /* priority                 */                  \
-            0,                          /* result                   */                  \
-            _CO_ALIGN(stack_size, 4),   /* stack_size               */                  \
-            (INT*)name##_stack,         /* stack_addr               */                  \
-        }
+#if (_ENABLE_STACK_TRACE)
+    #define DEF_TASK(name, priority, stack_size)                                        \
+            UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                             \
+            TASK_t  name =                                                              \
+            {                                                                           \
+                name##_stack,               /* stack_pos                */              \
+                #name,                      /* p_name                   */              \
+                { NULL },                   /* snode_create             */              \
+                { NULL, NULL, NULL },       /* dnode_task               */              \
+                { NULL, NULL, NULL },       /* dnode_timeout            */              \
+                0,                          /* flag                     */              \
+                priority,                   /* priority                 */              \
+                _CO_ALIGN(stack_size, 4),   /* scratch                  */              \
+                _CO_ALIGN(stack_size, 4),   /* stack_size_total         */              \
+                0,                          /* stack_size_usage         */              \
+                (INT*) name##_stack         /* stack_size_trace         */              \
+            }
+
+#else
+    #define DEF_TASK(name, priority, stack_size)                                        \
+            UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                             \
+            TASK_t  name =                                                              \
+            {                                                                           \
+                name##_stack,               /* stack_pos                */              \
+                #name,                      /* p_name                   */              \
+                { NULL },                   /* snode_create             */              \
+                { NULL, NULL, NULL },       /* dnode_task               */              \
+                { NULL, NULL, NULL },       /* dnode_timeout            */              \
+                0,                          /* flag                     */              \
+                priority,                   /* priority                 */              \
+                _CO_ALIGN(stack_size, 4)    /* scratch                  */              \
+            }
+
+#endif
 
 
 /*======================================================================================*/
@@ -80,22 +99,22 @@
 
 typedef struct _TASK_
 {
-    INT             stack_pos;          /*!< @brief Stack pointer                       */
-
+    UINT8          *stack_addr;             /*!< @brief Stack pointer                   */
     CHAR           *name;
 
     SNODE_t         snode_create;
     DNODE_t         dnode_task;
     DNODE_t         dnode_timeout;
 
-    INT             flag;
+    INT16           flag;
+    INT16           priority;
+    UINT            scratch;
 
-    INT8            priority;
-
-    UINT            result;
-
-    INT             stack_size;
-    INT            *stack_addr;
+#if (_ENABLE_STACK_TRACE)
+    INT16           stack_size_total;
+    INT16           stack_size_usage;
+    INT            *stack_size_trace;
+#endif
 
 } TASK_t, *P_TASK_t;
 
