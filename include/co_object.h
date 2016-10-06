@@ -20,8 +20,12 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#ifndef __CO_OBJECT_H__
+#define __CO_OBJECT_H__
+
+#include "type.h"
+
+#include "co_linked_list.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,15 +33,29 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+/*======================================================================================*/
+/*
+    The change object callback function
+*/
+/*======================================================================================*/
+typedef INT (*P_CHANGE_OBJECT_t)(VOID);
 
-#include "type.h"
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
+/*======================================================================================*/
+/*
+    Common Control block of Object 
+*/
+/*======================================================================================*/
 
+typedef struct _OBJECT_
+{
+    DLIST_t                 dlist_wait_tasks;
+    P_CHANGE_OBJECT_t       cb_changed;
+
+} OBJ_HEAD_t, *P_OBJ_HEAD_t;
+
+
+typedef int                 OBJECT_t;
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -45,5 +63,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__CHAOS_H__
+#endif //__CO_OBJECT_H__
 

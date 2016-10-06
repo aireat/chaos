@@ -79,6 +79,7 @@ CPPUTEST_C_WARNINGFLAGS   += -Wmissing-declarations
 CPPUTEST_C_WARNINGFLAGS   += -Wmissing-prototypes
 CPPUTEST_C_WARNINGFLAGS   += -Wnested-externs
 CPPUTEST_C_WARNINGFLAGS   += -Wno-pointer-to-int-cast
+CPPUTEST_C_WARNINGFLAGS   += -Wno-int-to-pointer-cast
 
 
 include $(CPPUTEST_HOME)/build/MakefileWorker.mk

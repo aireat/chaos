@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __TYPE_LINKED_LIST_H__
-#define __TYPE_LINKED_LIST_H__
+#ifndef __CO_LINKED_LIST_H__
+#define __CO_LINKED_LIST_H__
 
 #include "type.h"
 
@@ -95,5 +95,5 @@ VOID dlist_cut_node(P_DNODE_t p_cut_node);
     } /* extern "C" */
 #endif
 
-#endif //__TYPE_LINKED_LIST_H__
+#endif //__CO_LINKED_LIST_H__
 

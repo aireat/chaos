@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __MACROS_H__
-#define __MACROS_H__
+#ifndef __CO_MACROS_H__
+#define __CO_MACROS_H__
 
 #include "type.h"
 
@@ -95,5 +95,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__MACROS_H__
+#endif //__CO_MACROS_H__
 

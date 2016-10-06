@@ -57,10 +57,9 @@ typedef struct _SCHEDULER_
 
 
 UINT _sch_get_next_task(VOID);
-VOID _sch_make_ready(P_TASK_t p_task);
-//VOID _sch_make_block(P_TASK_t p_task, UINT wait_obj, UINT time_ms);
+VOID _sch_make_ready(P_TASK_t p_task, INT priority);
+VOID _sch_make_block(P_TASK_t p_task, OBJECT_t wait_obj, UINT time_ms);
 VOID _sch_make_free(P_TASK_t p_task);
-VOID _sch_change_priority(P_TASK_t p_task);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

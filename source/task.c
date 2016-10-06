@@ -31,8 +31,8 @@
 RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
 {
     // check priority
-    p_task->priority = (UINT8)(_CO_MIN((p_task->priority), 
-                                       (_MAXIMUM_PRIORITY)) - 1);
+    p_task->priority = (INT8)(_CO_MIN((p_task->priority), 
+                                      (_MAXIMUM_PRIORITY)) - 1);
 
     p_task->stack_pos = 0;
     entry_point = 0;

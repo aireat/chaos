@@ -50,7 +50,7 @@ VOID _knl_task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
     
     slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
 
-    _sch_make_ready(p_task);
+    _sch_make_ready(p_task, p_task->priority);
 }
 
 VOID _knl_task_delete(P_TASK_t p_task)
