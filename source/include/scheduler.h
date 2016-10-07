@@ -42,8 +42,6 @@ typedef struct _READY_
 
 typedef struct _SCHEDULER_
 {
-    DLIST_t         timeout;
-
 #if (_ENABLE_FAIR_SCHEDULING)
     READY_t         ready[2];
     P_READY_t       p_ready0, p_ready1;
@@ -51,7 +49,6 @@ typedef struct _SCHEDULER_
     READY_t         ready[1];
     P_READY_t       p_ready0;
 #endif
-
 
 } SCHEDULER_t, *P_SCHEDULER_t;
 

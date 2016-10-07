@@ -49,7 +49,6 @@
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
-                { NULL, NULL, NULL },       /* dnode_timeout            */              \
                 0,                          /* flag                     */              \
                 priority,                   /* priority                 */              \
                 _CO_ALIGN(stack_size, 4),   /* scratch                  */              \
@@ -67,7 +66,6 @@
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
-                { NULL, NULL, NULL },       /* dnode_timeout            */              \
                 0,                          /* flag                     */              \
                 priority,                   /* priority                 */              \
                 _CO_ALIGN(stack_size, 4)    /* scratch                  */              \
@@ -86,9 +84,9 @@
 #define TASK_FLAG_READY                 (1 <<  0)
 #define TASK_FLAG_READY1                (1 <<  1)
 #define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2) 
-//#define TASK_FALG_BLOCK                 (1 <<  3)
-#define TASK_FLAG_TIMEOUT               (1 <<  4)
-#define TASK_FLAG_TIMEOUT_OVEFLOW       (1 <<  5)
+
+#define TASK_FALG_WAIT_OBJECT           (1 <<  4)
+#define TASK_FLAG_TIMEOUT               (1 <<  5)
 
 
 /*======================================================================================*/
@@ -104,7 +102,6 @@ typedef struct _TASK_
 
     SNODE_t         snode_create;
     DNODE_t         dnode_task;
-    DNODE_t         dnode_timeout;
 
     INT16           flag;
     INT16           priority;

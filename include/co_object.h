@@ -38,7 +38,7 @@
     The change object callback function
 */
 /*======================================================================================*/
-typedef INT (*P_CHANGE_OBJECT_t)(VOID);
+typedef INT (*P_CHANGE_CALLBACK_t)(VOID);
 
 
 /*======================================================================================*/
@@ -50,7 +50,8 @@ typedef INT (*P_CHANGE_OBJECT_t)(VOID);
 typedef struct _OBJECT_
 {
     DLIST_t                 dlist_wait_tasks;
-    P_CHANGE_OBJECT_t       cb_changed;
+    P_CHANGE_CALLBACK_t     change_callback;
+    INT                     change_count;
 
 } OBJ_HEAD_t, *P_OBJ_HEAD_t;
 

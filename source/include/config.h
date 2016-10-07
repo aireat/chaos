@@ -54,6 +54,10 @@
 #define _ENABLE_STACK_TRACE             1
 #endif
 
+#ifndef _MS_VALUE_PER_A_TICK
+#define _MS_VALUE_PER_A_TICK            1
+#endif
+
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus

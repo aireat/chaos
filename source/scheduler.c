@@ -151,18 +151,14 @@ VOID _sch_make_block(P_TASK_t p_task, OBJECT_t wait_obj, UINT time_ms)
     {
         dlist_add_node_at_tail(&(p_obj_head->dlist_wait_tasks),
                                &(p_task->dnode_task));
+
+        p_task->flag |= TASK_FALG_WAIT_OBJECT;
     }
 
     // add task in timeout list
     if (time_ms > 0)
     {
-        p_task->scratch = g_kernel.system_tick + time_ms;
-
-        if (p_task->scratch <= g_kernel.system_tick)
-            p_task->flag |= TASK_FLAG_TIMEOUT_OVEFLOW;
-
-        dlist_add_node_at_tail(&(g_kernel.sch.timeout),
-                               &(p_task->dnode_timeout));
+        p_task->scratch = time_ms;
 
         p_task->flag |= TASK_FLAG_TIMEOUT;
     }
@@ -190,12 +186,6 @@ VOID _sch_make_free(P_TASK_t p_task)
 
             READY_FLAG_CLEAR(p_ready, priority);
         }
-    }
-
-    // cut dnode_timeout of task
-    if (p_task->dnode_timeout.p_list)
-    {
-        dlist_cut_node(&(p_task->dnode_timeout));
     }
 
     p_task->flag = TASK_FLAG_NONE;

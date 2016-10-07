@@ -84,25 +84,50 @@ VOID _knl_stack_usage(P_TASK_t p_task)
 
 VOID _knl_check_changes(VOID)
 {
-    // check timeout node
-    if (g_kernel.system_tick != g_kernel.system_tick_check)
+    P_TASK_t        p_task;
+    P_SNODE_t       p_snode = g_kernel.slist_task.p_head;
+    P_OBJ_HEAD_t    p_object;
+
+    while (p_snode)
     {
-        P_TASK_t    p_task;
-        P_DNODE_t   p_dnoe_timeout = g_kernel.sch.timeout.p_head;
+        p_task = _CO_TYPE(TASK_t, snode_create, p_snode);
+        p_snode = p_snode->p_next;
 
-        while (p_dnode_timeout)
+        // If task is ready, go next item
+        if (p_task->flag & TASK_FLAG_READY)
+            continue;
+
+        // check wait object's changes
+        if (p_task->flag & TASK_FALG_WAIT_OBJECT)
         {
-            p_task = _CO_TYPE(TASK_t, dnode_timeout, p_dnode_timeout);
-            p_dnode_timeout = p_dnode_timeout->p_next;
-
-            
+            p_object = (P_OBJ_HEAD_t) p_task->dnode_task.p_list;
+            if (p_object->change_count > 0)
+            {
+                if (p_object->change_callback())
+                    continue;
+            }
         }
 
-        g_kernel.system_tick_check = g_kernel.system_tick;
-    }
+        // if system tick is not chagne, go next item
+        if (g_kernel.system_tick == g_kernel.system_tick_check)
+            continue;
 
-    // check resources
-    // TODO : ring-buffer machanism
+        // check timeout
+        if (p_task->flag & TASK_FLAG_TIMEOUT)
+        {
+            if (p_task->scratch <= _MS_VALUE_PER_A_TICK)
+            {
+                _sch_make_ready(p_task, p_task->priority);
+
+                // TODO: need to define timeout-value
+                p_task->scratch = 0;
+
+                continue;
+            }
+
+            p_task->scratch -= _MS_VALUE_PER_A_TICK;
+        }
+    }
 }
 
 
