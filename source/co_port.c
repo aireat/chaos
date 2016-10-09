@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#include "co_port.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,61 +28,50 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#include "config.h"
-
-#include "type.h"
-#include "k_log.h"
-#include "clz_func.h"
-#include "scheduler.h"
-#include "utility.h"
-
-#include "chaos.h"
-
-
-typedef struct _KERNEL_
+VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
 {
-    P_TASK_t        task_curr_running;
-    P_TASK_t        task_next_running;
-    P_TASK_t        task_idle;
-    
-    UINT            system_tick;
-    UINT            system_tick_check;
+    INT *p_top;
+
+    // make growing down initial stack
+
+    // move to top of stack
+    {
+        p_top  = (INT*)p_task->stack_addr;
+        p_top += (p_task->scratch >> 2);
+    }
+
+    // Initialize register
+    {
+        p_top[  0] = (INT) 0xAA;                    // 01. TOP
+        p_top[ -1] = (INT) 0x01000000;              // 02. PSR
+        p_top[ -2] = (INT) _task_entry_point;       // 03. PC
+
+        p_top[ -5] = (INT) 0x00;                    // 06. R3
+        p_top[ -6] = (INT) p_arg;                   // 07. R2
+        p_top[ -7] = (INT) entry_point;             // 08. R1
+        p_top[ -8] = (INT) p_task;                  // 09. R0
+
 #if (_ENABLE_STACK_TRACE)
-    UINT            system_tick_stack_trace;
+        p_top[ -3] = (INT) 0x00;                    // 04. LR
+        p_top[ -4] = (INT) 0x00;                    // 05. R12
+
+        p_top[ -9] = (INT) 0x00;                    // 10. R11
+        p_top[-10] = (INT) 0x00;                    // 11. R10
+        p_top[-11] = (INT) 0x00;                    // 12. R9
+        p_top[-12] = (INT) 0x00;                    // 13. R8
+        p_top[-13] = (INT) 0x00;                    // 14. R7
+        p_top[-14] = (INT) 0x00;                    // 15. R6
+        p_top[-15] = (INT) 0x00;                    // 16. R5
+        p_top[-16] = (INT) 0x00;                    // 17. R4
 #endif
-    
-    UINT            idle_stay_ms;
+    }
 
-    SLIST_t         slist_task;
-    SLIST_t         slist_resource;
-
-    SCHEDULER_t     sch;
-
-} KERNEL_t, *P_KERNEL_t;
-
-
-extern KERNEL_t     g_kernel;
-
-VOID _knl_init(VOID);
-RESULT_t _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag);
-RESULT_t _knl_task_delete(P_TASK_t p_task);
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority);
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
-VOID _knl_systick_handler(VOID);
-VOID _knl_do_context_switch(VOID);
-VOID _knl_check_changes(VOID);
-
-
-VOID _task_entry_point(P_TASK_t       p_task,
-                       P_TASK_PROC_t  entry_point,
-                       VOID          *p_arg,
-                       INT            result);
+    p_task->stack_addr = p_top[-16];
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__KERNEL_H__
 

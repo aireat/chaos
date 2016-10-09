@@ -20,8 +20,12 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#ifndef __CO_PORT_H__
+#define __CO_PORT_H__
+
+#include "type.h"
+
+#include "co_task.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,55 +33,7 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#include "config.h"
-
-#include "type.h"
-#include "k_log.h"
-#include "clz_func.h"
-#include "scheduler.h"
-#include "utility.h"
-
-#include "chaos.h"
-
-
-typedef struct _KERNEL_
-{
-    P_TASK_t        task_curr_running;
-    P_TASK_t        task_next_running;
-    P_TASK_t        task_idle;
-    
-    UINT            system_tick;
-    UINT            system_tick_check;
-#if (_ENABLE_STACK_TRACE)
-    UINT            system_tick_stack_trace;
-#endif
-    
-    UINT            idle_stay_ms;
-
-    SLIST_t         slist_task;
-    SLIST_t         slist_resource;
-
-    SCHEDULER_t     sch;
-
-} KERNEL_t, *P_KERNEL_t;
-
-
-extern KERNEL_t     g_kernel;
-
-VOID _knl_init(VOID);
-RESULT_t _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag);
-RESULT_t _knl_task_delete(P_TASK_t p_task);
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority);
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
-VOID _knl_systick_handler(VOID);
-VOID _knl_do_context_switch(VOID);
-VOID _knl_check_changes(VOID);
-
-
-VOID _task_entry_point(P_TASK_t       p_task,
-                       P_TASK_PROC_t  entry_point,
-                       VOID          *p_arg,
-                       INT            result);
+VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -85,5 +41,5 @@ VOID _task_entry_point(P_TASK_t       p_task,
     } /* extern "C" */
 #endif
 
-#endif //__KERNEL_H__
+#endif //__CO_PORT_H__
 

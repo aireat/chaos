@@ -35,6 +35,10 @@ typedef enum
 {
     RESULT_SUCCESS          =  0,
 
+    RESULT_INTERNAL_ERROR   =  -1,
+    RESULT_TASK_FLAG_ERROR  =  -2,
+    RESULT_INVALID_STATE    =  -2,
+
     RESULT_MAX
 
 } RESULT_t;

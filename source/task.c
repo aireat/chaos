@@ -28,27 +28,92 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+RESULT_t task_create(P_TASK_t       p_task,
+                     P_TASK_PROC_t  entry_point,
+                     VOID          *p_arg,
+                     TASK_OPT_t     option_flag)
 {
     // check priority
     p_task->priority = (INT8)(_CO_MIN((p_task->priority), 
                                       (_MAXIMUM_PRIORITY)) - 1);
 
     // make specific pattern in stack for traceing
-    _co_memset(p_task->stack_addr, 0xCC, p_task->scratch);
+#if (_ENABLE_STACK_TRACE)
+    {
+        _co_memset(p_task->stack_size_trace, 0xCC, p_task->scratch);
 
-    // make ready
-    _knl_task_create(p_task, entry_point, p_arg);
+    #if (_STACK_GROWS_DOWN)
+        {
+            p_task->stack_size_trace += (p_task->scratch >> 2);
+        }
+    #endif
+    }
+#endif
 
-    entry_point = 0;
-    p_arg = NULL;
-    return RESULT_SUCCESS;
+    // set-up initial stack
+    _port_stack_set_up(p_task, entry_point, p_arg);
+
+    return _knl_task_create(p_task, option_flag);
 }
+
 
 RESULT_t task_delete(P_TASK_t p_task)
 {
-    p_task->scratch = 0;
-    return RESULT_SUCCESS;
+    return _knl_task_delete(p_task);
+}
+
+
+RESULT_t task_block(P_TASK_t p_task)
+{
+    if (p_task->flag & TASK_FLAG_ERROR)
+    {
+        _K_LOG_TASK("[%s] task TASK_FLAG_ERROR[%04X] in task_block()",
+                    p_task->name, p_task->flag);
+
+        return RESULT_TASK_FLAG_ERROR;
+    }
+
+    if (!(p_task->flag & TASK_FLAG_READY))
+        return RESULT_SUCCESS;
+
+    return _knl_task_block(p_task, NULL, TASK_TIME_INFINITE);
+}
+
+RESULT_t task_ready(P_TASK_t p_task)
+{
+    if (p_task->flag & TASK_FLAG_ERROR)
+    {
+        _K_LOG_TASK("[%s] task TASK_FLAG_ERROR[%04X] in task_ready()",
+                    p_task->name, p_task->flag);
+
+        return RESULT_TASK_FLAG_ERROR;
+    }
+
+    if (p_task->flag & TASK_FLAG_READY)
+        return RESULT_SUCCESS;
+
+    return _knl_task_ready(p_task, p_task->priority);
+}
+
+RESULT_t task_sleep(UINT millisecond)
+{
+    if (!(p_task->flag & TASK_FLAG_READY))
+    {
+        if (p_task->flag & TASK_FLAG_ERROR)
+        {
+            _K_LOG_TASK("[%s] task TASK_FLAG_ERROR[%04X] in task_sleep()",
+                        p_task->name, p_task->flag);
+
+            return RESULT_TASK_FLAG_ERROR;
+        }
+
+        _K_LOG_TASK("[%s] task INVALID_STATE[%04X] in task_sleep()",
+                    p_task->name, p_task->flag);
+
+        return RESULT_INVALID_STATE;
+    } 
+
+    return _knl_task_block(p_task, NULL, millisecond);
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

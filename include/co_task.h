@@ -42,33 +42,33 @@
 /*======================================================================================*/
 #if (_ENABLE_STACK_TRACE)
     #define DEF_TASK(name, priority, stack_size)                                        \
-            UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                             \
+            UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
-                name##_stack,               /* stack_pos                */              \
+                name##_stack,               /* stack_addr               */              \
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
                 0,                          /* flag                     */              \
                 priority,                   /* priority                 */              \
-                _CO_ALIGN(stack_size, 4),   /* scratch                  */              \
-                _CO_ALIGN(stack_size, 4),   /* stack_size_total         */              \
+                _CO_ALIGN(stack_size, 8),   /* scratch                  */              \
+                _CO_ALIGN(stack_size, 8),   /* stack_size_total         */              \
                 0,                          /* stack_size_usage         */              \
                 (INT*) name##_stack         /* stack_size_trace         */              \
             }
 
 #else
     #define DEF_TASK(name, priority, stack_size)                                        \
-            UINT8   name##_stack[_CO_ALIGN(stack_size, 4)];                             \
+            UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
-                name##_stack,               /* stack_pos                */              \
+                name##_stack,               /* stack_addr               */              \
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
                 0,                          /* flag                     */              \
                 priority,                   /* priority                 */              \
-                _CO_ALIGN(stack_size, 4)    /* scratch                  */              \
+                _CO_ALIGN(stack_size, 8)    /* scratch                  */              \
             }
 
 #endif
@@ -83,11 +83,20 @@
 #define TASK_FLAG_NONE                  0
 #define TASK_FLAG_READY                 (1 <<  0)
 #define TASK_FLAG_READY1                (1 <<  1)
-#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2) 
+#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2)
+#define TASK_FLAG_ERROR                 (1 <<  3)
 
 #define TASK_FALG_WAIT_OBJECT           (1 <<  4)
 #define TASK_FLAG_TIMEOUT               (1 <<  5)
 
+#define TASK_TIME_INFINITE              (0xFFFFFFFF)
+
+typedef enum
+{
+    TASK_OPT_NONE               = (0),
+    TASK_OPT_BLOCKED            = (1 << 0),
+
+} TASK_OPT_t;
 
 /*======================================================================================*/
 /*
@@ -105,7 +114,13 @@ typedef struct _TASK_
 
     INT16           flag;
     INT16           priority;
-    UINT            scratch;
+    UINT            scratch;                /* [ scratch usage ]                        */
+                                            /*   state  |   mean                        */
+                                            /* ---------|------------------------------ */
+                                            /*   init   | the size of stack             */
+                                            /*  running | remain time slice value       */
+                                            /*   block  | timeout value                 */
+                                            /*  wake-up | the result of waiting action  */
 
 #if (_ENABLE_STACK_TRACE)
     INT16           stack_size_total;
@@ -124,15 +139,18 @@ typedef struct _TASK_
 
 typedef INT (*P_TASK_PROC_t)(VOID *p_arg);
 
-RESULT_t task_create(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
+OBJECT_t task_create(P_TASK_t       p_task,
+                     P_TASK_PROC_t  entry_point,
+                     VOID          *p_arg,
+                     TASK_OPT_t     option_flag);
 
 RESULT_t task_delete(P_TASK_t p_task);
 
-//VOID task_block(P_TASK_t p_task);
+RESULT_t task_block(P_TASK_t p_task);
 
-//VOID task_ready(P_TASK_t p_task);
+RESULT_t task_ready(P_TASK_t p_task);
 
-//VOID task_sleep(P_TASK_t p_task);
+RESULT_t task_sleep(UINT millisecond);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

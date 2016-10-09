@@ -54,6 +54,7 @@ typedef struct _SLIST_
 
 
 VOID slist_init_list(P_SLIST_t p_list);
+VOID slist_init_node(P_SNODE_t p_init_node);
 VOID slist_add_node_at_head(P_SLIST_t p_list, P_SNODE_t p_add_node);
 VOID slist_add_node_at_tail(P_SLIST_t p_list, P_SNODE_t p_add_node);
 VOID slist_cut_node(P_SLIST_t p_list, P_SNODE_t p_cut_node);
@@ -84,6 +85,7 @@ typedef struct _DLIST_
 
 
 VOID dlist_init_list(P_DLIST_t p_list);
+VOID dlist_init_node(P_DNODE_t p_init_node);
 VOID dlist_add_node_at_head(P_DLIST_t p_list, P_DNODE_t p_add_node);
 VOID dlist_add_node_at_tail(P_DLIST_t p_list, P_DNODE_t p_add_node);
 VOID dlist_cut_node(P_DNODE_t p_cut_node);

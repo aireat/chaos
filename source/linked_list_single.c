@@ -36,6 +36,12 @@ VOID slist_init_list(P_SLIST_t p_list)
 }
 
 
+VOID slist_init_node(P_SNODE_t p_init_node)
+{
+    p_init_node->p_next = NULL;
+}
+
+
 VOID slist_add_node_at_head(P_SLIST_t p_list, P_SNODE_t p_add_node)
 {
     P_SNODE_t   p_head_node = p_list->p_head;

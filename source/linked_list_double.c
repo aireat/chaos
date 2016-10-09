@@ -36,6 +36,13 @@ VOID dlist_init_list(P_DLIST_t p_list)
 }
 
 
+VOID dlist_init_node(P_DNODE_t p_init_node)
+{
+    p_init_node->p_next = NULL;
+    p_init_node->p_prev = NULL;
+    p_init_node->p_list = NULL;
+}
+
 VOID dlist_add_node_at_head(P_DLIST_t p_list, P_DNODE_t p_add_node)
 {
     P_DNODE_t   p_head_node = p_list->p_head;

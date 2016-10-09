@@ -90,12 +90,16 @@ UINT _sch_get_next_task(VOID)
         }
 #endif
 
+        g_kernel.idle_stay_ms = 0;
+
         return (UINT)p_task;
     }
     // no ready task.
     else
     {
+        g_kernel.idle_stay_ms += _MS_VALUE_PER_A_TICK;
 
+        return (UINT)g_kernel.task_idle;
     }
 
     return 0;
@@ -139,10 +143,8 @@ VOID _sch_make_ready(P_TASK_t p_task, INT priority)
 }
 
 
-VOID _sch_make_block(P_TASK_t p_task, OBJECT_t wait_obj, UINT time_ms)
+VOID _sch_make_block(P_TASK_t p_task, P_OBJ_HEAD_t p_obj_head, UINT time_ms)
 {
-    P_OBJ_HEAD_t    p_obj_head = (P_OBJ_HEAD_t) wait_obj;
-
     // make a task free
     _sch_make_free(p_task);
 

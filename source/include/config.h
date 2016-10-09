@@ -55,7 +55,19 @@
 #endif
 
 #ifndef _MS_VALUE_PER_A_TICK
-#define _MS_VALUE_PER_A_TICK            1
+#define _MS_VALUE_PER_A_TICK            10
+#endif
+
+#ifndef _STACK_GROWS_DOWN
+#define _STACK_GROWS_DOWN               1
+#endif
+
+#ifndef _ENABLE_KERNEL_LOG
+#define _ENABLE_KERNEL_LOG              1
+#endif
+
+#ifndef _ENABLE_KERNEL_LOG_TASK
+#define _ENABLE_KERNEL_LOG_TASK         1
 #endif
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
