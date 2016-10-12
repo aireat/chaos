@@ -95,8 +95,17 @@ RESULT_t task_ready(P_TASK_t p_task)
     return _knl_task_ready(p_task, p_task->priority);
 }
 
+RESULT_t task_yield(VOID)
+{
+    P_TASK_t p_task = g_kernel.task_curr_running;
+
+    return _knl_task_block(p_task, NULL, 0);
+}
+
 RESULT_t task_sleep(UINT millisecond)
 {
+    P_TASK_t p_task = g_kernel.task_curr_running;
+
     if (!(p_task->flag & TASK_FLAG_READY))
     {
         if (p_task->flag & TASK_FLAG_ERROR)

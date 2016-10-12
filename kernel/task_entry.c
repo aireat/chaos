@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,15 +29,20 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+VOID _task_entry_point(P_TASK_t       p_task,
+                       P_TASK_PROC_t  entry_point,
+                       VOID          *p_arg,
+                       INT            result)
+{
+    _K_LOG_TASK("[%s] task created.", p_task->name);
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
+    // call entry point
+    result = entry_point(p_arg);
 
-#include "co_port.h"
+    _K_LOG_TASK("[%s] task deleted. exit code(%d).", p_task->name, result);
+
+    _knl_task_delete(p_task);
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -46,6 +50,4 @@
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

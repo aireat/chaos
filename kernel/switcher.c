@@ -28,82 +28,9 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-
-/*======================================================================================*/
-/*
-    Global variable
-*/
-/*======================================================================================*/
-KERNEL_t     g_kernel;
-
 #if (_ENABLE_STACK_TRACE)
 INT _knl_stack_usage(P_TASK_t p_task);
 #endif
-
-VOID _knl_init(VOID)
-{
-    _co_memset(&g_kernel, 0x00, sizeof(g_kernel));
-
-    g_kernel.sch.p_ready0 = g_kernel.sch.ready;
-}
-
-RESULT_t _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag)
-{
-    // Add task in creation list
-    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    // Make task as ready state
-    if (!(option_flag & TASK_OPT_BLOCKED))
-    {
-        _sch_make_ready(p_task, p_task->priority);
-    }
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_delete(P_TASK_t p_task)
-{
-    // Make task as free state
-    _sch_make_free(p_task);
-
-    // Delete task from creation list
-    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    _knl_do_context_switch();
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority)
-{
-    if (p_task->flag & TASK_FLAG_ERROR)
-    {
-        _K_LOG_TASK("[%s] task is seted internal error flag and call task_ready()",
-                    p_task->name);
-        return RESULT_INTERNAL_ERROR;
-    }
-
-    _sch_make_ready(p_task, priority);
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
-{
-
-
-    _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
-
-    return RESULT_SUCCESS;
-}
-
-VOID _knl_systick_handler(VOID)
-{
-    g_kernel.system_tick += _MS_VALUE_PER_A_TICK;
-
-    if (g_kernel.task_curr_running == g_kernel.task_idle)
-        _knl_do_context_switch();
-}
 
 VOID _knl_do_context_switch(VOID)
 {
@@ -114,7 +41,7 @@ VOID _knl_do_context_switch(VOID)
     {
         g_kernel.task_next_running = g_kernel.task_curr_running;
 
-        _PORT_DO_CONTEXT_SWITCH();
+        //_PORT_DO_CONTEXT_SWITCH();
     }
 }
 

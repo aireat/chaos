@@ -20,8 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#ifndef __TASK_ENTRY_H__
+#define __TASK_ENTRY_H__
+
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,15 +32,10 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
-
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-
-#include "co_port.h"
+VOID _task_entry_point(P_TASK_t       p_task,
+                       P_TASK_PROC_t  entry_point,
+                       VOID          *p_arg,
+                       INT            result);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -47,5 +44,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__CHAOS_H__
+#endif //__TASK_ENTRY_H__
 

@@ -20,11 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __SCHEDULER_H__
-#define __SCHEDULER_H__
+#ifndef __SWITCHER_H__
+#define __SWITCHER_H__
 
-#include "config.h"
-#include "chaos.h"
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,32 +31,8 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-
-typedef struct _READY_
-{
-    INT             flag;
-    DLIST_t         list[_MAXIMUM_PRIORITY];
-
-} READY_t, *P_READY_t;
-
-typedef struct _SCHEDULER_
-{
-#if (_ENABLE_FAIR_SCHEDULING)
-    READY_t         ready[2];
-    P_READY_t       p_ready0, p_ready1;
-#else
-    READY_t         ready[1];
-    P_READY_t       p_ready0;
-#endif
-
-} SCHEDULER_t, *P_SCHEDULER_t;
-
-
-UINT _sch_get_next_task(VOID);
-VOID _sch_make_ready(P_TASK_t p_task, INT priority);
-VOID _sch_make_block(P_TASK_t p_task, P_OBJ_HEAD_t p_obj_head, UINT time_ms);
-VOID _sch_make_free(P_TASK_t p_task);
-
+VOID _knl_do_context_switch(VOID);
+VOID _knl_check_changes(VOID);
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -65,5 +40,5 @@ VOID _sch_make_free(P_TASK_t p_task);
     } /* extern "C" */
 #endif
 
-#endif //__SCHEDULER_H__
+#endif //__SWITCHER_H__
 

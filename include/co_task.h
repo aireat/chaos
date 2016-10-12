@@ -45,7 +45,7 @@
             UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
-                name##_stack,               /* stack_addr               */              \
+                (INT*) name##_stack,        /* stack_addr               */              \
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
@@ -62,7 +62,7 @@
             UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
-                name##_stack,               /* stack_addr               */              \
+                (INT*) name##_stack,        /* stack_addr               */              \
                 #name,                      /* p_name                   */              \
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
@@ -106,7 +106,7 @@ typedef enum
 
 typedef struct _TASK_
 {
-    UINT8          *stack_addr;             /*!< @brief Stack pointer                   */
+    INT            *stack_addr;             /*!< @brief Stack pointer                   */
     CHAR           *name;
 
     SNODE_t         snode_create;
@@ -139,7 +139,7 @@ typedef struct _TASK_
 
 typedef INT (*P_TASK_PROC_t)(VOID *p_arg);
 
-OBJECT_t task_create(P_TASK_t       p_task,
+RESULT_t task_create(P_TASK_t       p_task,
                      P_TASK_PROC_t  entry_point,
                      VOID          *p_arg,
                      TASK_OPT_t     option_flag);
@@ -149,6 +149,8 @@ RESULT_t task_delete(P_TASK_t p_task);
 RESULT_t task_block(P_TASK_t p_task);
 
 RESULT_t task_ready(P_TASK_t p_task);
+
+RESULT_t task_yield(VOID);
 
 RESULT_t task_sleep(UINT millisecond);
 

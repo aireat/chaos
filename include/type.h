@@ -63,7 +63,7 @@
     #define __CO_FUNC__             __func__
     #define __CO_LINE__             __LINE__
     #define __CO_FILE__             __FILE__
-    #define WEAK                    __weak
+    #define WEAK                    
     #define __ASM__                 __asm
     #define __INLINE__              inline
     #define __STATIC_INLINE__       static inline

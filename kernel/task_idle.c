@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,22 +29,24 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+INT _task_idle(VOID *p_arg)
+{
+    p_arg = 0x00;
+    _port_user_idle(g_kernel.idle_stay_ms);
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
 
-#include "co_port.h"
+    return 0;
+}
 
+WEAK VOID _port_user_idle(UINT idle_stay_ms)
+{
+    //TODO: delete
+    idle_stay_ms = 0;
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

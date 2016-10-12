@@ -20,12 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __K_LOG_H__
-#define __K_LOG_H__
-
-#include "type.h"
-
-#include "co_linked_list.h"
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -33,15 +28,71 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#define _K_LOG_ERR(...)             _port_log_printf("K-ERR", __VA_ARGS__)
 
-#if ((_ENABLE_KERNEL_LOG) & (_ENABLE_KERNEL_LOG_TASK))
-    #define _K_LOG_TASK(...)        _port_log_printf("K-TASK", __VA_ARGS__)
+/*======================================================================================*/
+/*
+    Global variable
+*/
+/*======================================================================================*/
+KERNEL_t     g_kernel;
 
-#else
-    #define _K_LOG_TASK(...)        DO_NOTHING
 
-#endif
+VOID __knl_init(VOID)
+{
+    _co_memset(&g_kernel, 0x00, sizeof(g_kernel));
+
+    g_kernel.sch.p_ready0 = g_kernel.sch.ready;
+}
+
+RESULT_t _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag)
+{
+    // Add task in creation list
+    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
+
+    // Make task as ready state
+    if (!(option_flag & TASK_OPT_BLOCKED))
+    {
+        _sch_make_ready(p_task, p_task->priority);
+    }
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _knl_task_delete(P_TASK_t p_task)
+{
+    // Make task as free state
+    _sch_make_free(p_task);
+
+    // Delete task from creation list
+    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
+
+    _knl_do_context_switch();
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority)
+{
+    if (p_task->flag & TASK_FLAG_ERROR)
+    {
+        _K_LOG_TASK("[%s] task is seted internal error flag and call task_ready()",
+                    p_task->name);
+        return RESULT_INTERNAL_ERROR;
+    }
+
+    _sch_make_ready(p_task, priority);
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
+{
+    _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
+
+    _knl_do_context_switch();
+
+    return RESULT_SUCCESS;
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -49,6 +100,4 @@
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__K_LOG_H__
 

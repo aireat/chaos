@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
+#include "stdio.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,15 +30,30 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+WEAK VOID _port_log_printf(CONST CHAR *p_class, CONST CHAR *p_format, ...)
+{
+    va_list     args;
+    INT         size;
+    char        temp[96];
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
+    size = 0;
 
-#include "co_port.h"
+    // add class
+    {
+        size += sprintf(&temp[size], " %8s", (char*)p_class);
+    }
+
+    // add message
+    {
+        va_start(args, p_format);
+
+        size += vsnprintf(&temp[size], (sizeof(temp)-(size+2)), (char*)p_format, args);
+        temp[size++] = 0x0D;
+        temp[size]   = 0x00;
+
+        va_end(args);
+    }
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -46,6 +61,4 @@
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

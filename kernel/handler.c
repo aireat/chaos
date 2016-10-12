@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,15 +29,13 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+VOID __handler_systick(VOID)
+{
+    g_kernel.system_tick += _MS_VALUE_PER_A_TICK;
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-
-#include "co_port.h"
+    if (g_kernel.task_curr_running == g_kernel.task_idle)
+        _knl_do_context_switch();
+}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -46,6 +43,4 @@
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

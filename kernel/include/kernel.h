@@ -20,8 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#ifndef __KERNEL_H__
+#define __KERNEL_H__
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,16 +29,66 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+#include "config.h"
 
 #include "type.h"
+#include "k_log.h"
+#include "clz_func.h"
+#include "scheduler.h"
+#include "utility.h"
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
+#include "handler.h"
+#include "switcher.h"
+#include "task_entry.h"
+#include "task_idle.h"
 
-#include "co_port.h"
+#include "chaos.h"
+
+
+typedef struct _KERNEL_
+{
+    P_TASK_t        task_curr_running;
+    P_TASK_t        task_next_running;
+    P_TASK_t        task_idle;
+    
+    UINT            system_tick;
+    UINT            system_tick_check;
+#if (_ENABLE_STACK_TRACE)
+    UINT            system_tick_stack_trace;
+#endif
+    
+    UINT            idle_stay_ms;
+
+    SLIST_t         slist_task;
+    SLIST_t         slist_resource;
+
+    SCHEDULER_t     sch;
+
+} KERNEL_t, *P_KERNEL_t;
+
+
+extern KERNEL_t     g_kernel;
+
+VOID     __knl_init(VOID);
+RESULT_t __knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag);
+RESULT_t __knl_task_delete(P_TASK_t p_task);
+RESULT_t __knl_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t __knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+
+#if (_ENABLE_USE_SVC_CALL)
+RESULT_t __svc(0x00) _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag);
+RESULT_t __svc(0x00) _knl_task_delete(P_TASK_t p_task);
+RESULT_t __svc(0x00) _knl_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t __svc(0x00) _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+#else
+#define _knl_task_create    __knl_task_create
+#define _knl_task_delete    __knl_task_delete
+#define _knl_task_ready     __knl_task_ready
+#define _knl_task_block     __knl_task_block
+#endif
+
+
+
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -47,5 +97,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__CHAOS_H__
+#endif //__KERNEL_H__
 

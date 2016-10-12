@@ -40,7 +40,7 @@
         }
 
 
-UINT _sch_get_next_task(VOID)
+P_TASK_t _sch_get_next_task(VOID)
 {
     P_READY_t   p_ready = g_kernel.sch.p_ready0;
 
@@ -92,14 +92,14 @@ UINT _sch_get_next_task(VOID)
 
         g_kernel.idle_stay_ms = 0;
 
-        return (UINT)p_task;
+        return p_task;
     }
     // no ready task.
     else
     {
         g_kernel.idle_stay_ms += _MS_VALUE_PER_A_TICK;
 
-        return (UINT)g_kernel.task_idle;
+        return g_kernel.task_idle;
     }
 
     return 0;

@@ -23,8 +23,8 @@ TEST(task, T01)
     DEF_TASK(task1, 0, 10);
     //TASK_t      task;
 
-    _knl_init();
-    LONGS_EQUAL(task_create(&task1, 0, 0), RESULT_SUCCESS);
+    __knl_init();
+    LONGS_EQUAL(task_create(&task1, 0, 0, TASK_OPT_NONE), RESULT_SUCCESS);
 }
 
 
