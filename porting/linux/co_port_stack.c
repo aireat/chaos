@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,24 +28,38 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+void* ThreadProc(void *arg);
 
-#include "type.h"
+VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+{
+    int                 result;
+    pthread_attr_t      attr;
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-#include "co_system.h"
+    p_task->_p_entry_point = entry_point;
+    p_task->_p_arg = p_arg;
 
-#include "co_port.h"
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
+    // create thread as suspend
+    result = pthread_create(&(p_task->_thread),     /* thread           */
+                            NULL,                   /* attr             */
+                            ThreadProc,             /* start_routine    */
+                            (void*)p_task);         /* arg              */
+}
+
+void* ThreadProc(void *arg)
+{
+    P_TASK_t        p_task = (P_TASK_t) arg;
+    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+
+    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+    
+    return NULL;
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

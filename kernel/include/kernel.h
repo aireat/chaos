@@ -23,15 +23,10 @@
 #ifndef __KERNEL_H__
 #define __KERNEL_H__
 
-#ifdef __cplusplus
-    extern "C" {
-#endif
-
-//////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
-
-#include "config.h"
 
 #include "type.h"
+#include "chaos.h"
+
 #include "k_log.h"
 #include "clz_func.h"
 #include "scheduler.h"
@@ -42,8 +37,12 @@
 #include "task_entry.h"
 #include "task_idle.h"
 
-#include "chaos.h"
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+//////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 typedef struct _KERNEL_
 {

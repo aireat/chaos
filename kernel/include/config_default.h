@@ -20,8 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#ifndef __CONFIG_DEFAULT_H__
+#define __CONFIG_DEFAULT_H__
+
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,17 +32,56 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+/*======================================================================================*/
+/*
+    Setting for Default
+*/
+/*======================================================================================*/
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-#include "co_system.h"
+#ifndef _MAXIMUM_PRIORITY
+#define _MAXIMUM_PRIORITY               1
+#endif
 
-#include "co_port.h"
+#ifndef _ENABLE_FAIR_SCHEDULING
+#define _ENABLE_FAIR_SCHEDULING         0
+#endif
 
+
+#ifndef _IMPLEMENT_CLZ_BY_SW
+#define _IMPLEMENT_CLZ_BY_SW            1
+#endif
+
+#ifndef _ENABLE_STACK_TRACE
+#define _ENABLE_STACK_TRACE             1
+#endif
+
+#ifndef _ENABLE_USE_SVC_CALL
+#define _ENABLE_USE_SVC_CALL            0
+#endif
+
+#ifndef _MS_VALUE_PER_A_TICK
+#define _MS_VALUE_PER_A_TICK            10
+#endif
+
+#ifndef _STACK_GROWS_DOWN
+#define _STACK_GROWS_DOWN               1
+#endif
+
+#ifndef _ENABLE_KERNEL_LOG
+#define _ENABLE_KERNEL_LOG              1
+#endif
+
+#ifndef _ENABLE_KERNEL_LOG_TASK
+#define _ENABLE_KERNEL_LOG_TASK         1
+#endif
+
+#ifndef _TASK_IDLE_STACK_SIZE
+#define _TASK_IDLE_STACK_SIZE           96
+#endif
+
+#ifndef _PORT_TASK_EXTENSION_
+#define _PORT_TASK_EXTENSION_
+#endif
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -48,5 +89,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__CHAOS_H__
+#endif //__CONFIG_DEFAULT_H__
 

@@ -20,6 +20,7 @@ CPP_PLATFORM = Gcc
 SRC_DIRS = \
     $(PROJECT_HOME_DIR)/kernel \
     $(PROJECT_HOME_DIR)/kernel/include \
+    $(PROJECT_HOME_DIR)/porting/linux \
 
 TEST_SRC_DIRS = \
     tests\
@@ -29,6 +30,7 @@ INCLUDE_DIRS =\
   .\
   $(PROJECT_HOME_DIR)/include \
   $(PROJECT_HOME_DIR)/kernel/include \
+  $(PROJECT_HOME_DIR)/porting/linux \
   $(CPPUTEST_HOME)/include\
 #  $(PROJECT_HOME_DIR)/include/LedDriver\
 

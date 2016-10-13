@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,24 +28,35 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+DWORD WINAPI ThreadProc(LPVOID lpParameter);
 
-#include "type.h"
+VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+{
+    p_task->_p_entry_point = entry_point;
+    p_task->_p_arg = p_arg;
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-#include "co_system.h"
+    // create thread as suspend
+    p_task->_h_thread = CreateThread(NULL,                   /* lpThreadAttributes   */
+                                     0,                      /* dwStackSize          */
+                                     ThreadProc,             /* lpStartAddress       */
+                                     (LPVOID)p_task,         /* lpParameter          */
+                                     CREATE_SUSPENDED,       /* dwCreationFlags      */
+                                     NULL);                  /* lpThreadId           */
+}
 
-#include "co_port.h"
+DWORD WINAPI ThreadProc(LPVOID lpParameter)
+{
+    P_TASK_t        p_task = (P_TASK_t) lpParameter;
+    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
 
+    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+    
+    return 0;
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 

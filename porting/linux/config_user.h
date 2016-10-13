@@ -20,8 +20,11 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#ifndef __CONFIG_USER_H__
+#define __CONFIG_USER_H__
+
+#include "type.h"
+#include <pthread.h>
 
 #ifdef __cplusplus
     extern "C" {
@@ -30,17 +33,16 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-#include "type.h"
+/*======================================================================================*/
+/*
+    Setting for Linux system
+*/
+/*======================================================================================*/
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-#include "co_system.h"
 
-#include "co_port.h"
-
+#define _PORT_TASK_EXTENSION_       pthread_t           _thread;                     \
+                                    VOID               *_p_entry_point;                 \
+                                    VOID               *_p_arg;                         \
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -48,5 +50,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__CHAOS_H__
+#endif //__CONFIG_USER_H__
 

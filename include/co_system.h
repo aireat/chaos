@@ -20,10 +20,11 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __MY_CONFIG_H__
-#define __MY_CONFIG_H__
+#ifndef __CO_SYSTEM_H__
+#define __CO_SYSTEM_H__
 
 #include "type.h"
+#include "co_task.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,47 +33,10 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-/*======================================================================================*/
-/*
-    Definition for maximum task priority
-*/
-/*======================================================================================*/
-#ifndef _MAXIMUM_PRIORITY
-#define _MAXIMUM_PRIORITY               1
-#endif
+VOID co_rtos_start(P_TASK_t       p_task,
+                   P_TASK_PROC_t  entry_point,
+                   VOID          *p_arg);
 
-#ifndef _ENABLE_FAIR_SCHEDULING
-#define _ENABLE_FAIR_SCHEDULING         0
-#endif
-
-
-#ifndef _IMPLEMENT_CLZ_BY_SW
-#define _IMPLEMENT_CLZ_BY_SW            1
-#endif
-
-#ifndef _ENABLE_STACK_TRACE
-#define _ENABLE_STACK_TRACE             1
-#endif
-
-#ifndef _ENABLE_USE_SVC_CALL
-#define _ENABLE_USE_SVC_CALL            0
-#endif
-
-#ifndef _MS_VALUE_PER_A_TICK
-#define _MS_VALUE_PER_A_TICK            10
-#endif
-
-#ifndef _STACK_GROWS_DOWN
-#define _STACK_GROWS_DOWN               1
-#endif
-
-#ifndef _ENABLE_KERNEL_LOG
-#define _ENABLE_KERNEL_LOG              1
-#endif
-
-#ifndef _ENABLE_KERNEL_LOG_TASK
-#define _ENABLE_KERNEL_LOG_TASK         1
-#endif
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
@@ -80,5 +44,5 @@
     } /* extern "C" */
 #endif
 
-#endif //__MY_CONFIG_H__
+#endif //__CO_SYSTEM_H__
 

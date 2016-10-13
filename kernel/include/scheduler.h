@@ -23,7 +23,6 @@
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "config.h"
 #include "chaos.h"
 
 #ifdef __cplusplus

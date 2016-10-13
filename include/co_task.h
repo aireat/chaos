@@ -29,6 +29,9 @@
 #include "co_linked_list.h"
 #include "co_result.h"
 
+#include "config_user.h"
+#include "config_default.h"
+
 #ifdef __cplusplus
     extern "C" {
 #endif
@@ -54,7 +57,7 @@
                 _CO_ALIGN(stack_size, 8),   /* scratch                  */              \
                 _CO_ALIGN(stack_size, 8),   /* stack_size_total         */              \
                 0,                          /* stack_size_usage         */              \
-                (INT*) name##_stack         /* stack_size_trace         */              \
+                (INT*) name##_stack,        /* stack_size_trace         */              \
             }
 
 #else
@@ -68,7 +71,7 @@
                 { NULL, NULL, NULL },       /* dnode_task               */              \
                 0,                          /* flag                     */              \
                 priority,                   /* priority                 */              \
-                _CO_ALIGN(stack_size, 8)    /* scratch                  */              \
+                _CO_ALIGN(stack_size, 8),   /* scratch                  */              \
             }
 
 #endif
@@ -127,6 +130,8 @@ typedef struct _TASK_
     INT16           stack_size_usage;
     INT            *stack_size_trace;
 #endif
+
+    _PORT_TASK_EXTENSION_
 
 } TASK_t, *P_TASK_t;
 

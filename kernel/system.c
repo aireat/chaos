@@ -20,8 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CHAOS_H__
-#define __CHAOS_H__
+#include "kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,24 +28,34 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+DEF_TASK(idle, 0, _TASK_IDLE_STACK_SIZE);
 
-#include "type.h"
+VOID co_rtos_start(P_TASK_t       p_task,
+                   P_TASK_PROC_t  entry_point,
+                   VOID          *p_arg)
+{
+    // initialize kernel
+    __knl_init();
 
-#include "co_macros.h"
-#include "co_result.h"
-#include "co_linked_list.h"
-#include "co_object.h"
-#include "co_task.h"
-#include "co_system.h"
+    // initialize system
+    _port_system_init();
+    
+    // create basic task
+    {
+        // create idle task
+        task_create(&idle, _task_idle, NULL, TASK_OPT_NONE);
 
-#include "co_port.h"
+        // create main task
+        task_create(p_task, entry_point, p_arg, TASK_OPT_NONE);
+    }
 
+    // start system
+    _port_system_start();
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__CHAOS_H__
 
