@@ -38,7 +38,7 @@
     The change object callback function
 */
 /*======================================================================================*/
-typedef INT (*P_CHANGE_CALLBACK_t)(VOID);
+typedef INT (*P_CHANGE_CALLBACK_t)(VOID *p_arg);
 
 
 /*======================================================================================*/

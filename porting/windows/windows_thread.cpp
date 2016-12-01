@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#include "stdafx.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,23 +28,27 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_create_thread(VOID *p_arg);
+extern VOID _windows_thread_entry(VOID *p_arg);
 
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+DWORD WINAPI ThreadProc(LPVOID lpParameter)
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
-
-    // create thread as suspend
-    p_task->_h_thread = _windows_create_thread(p_task);
+    _windows_thread_entry(lpParameter);
+    
+    return 0;
 }
 
-VOID _windows_thread_entry(VOID *p_arg)
+VOID* _windows_create_thread(VOID *p_arg)
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+    HANDLE  h_thread;
 
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+    // create thread as suspend
+    h_thread = CreateThread(NULL,                   /* lpThreadAttributes   */
+                            0,                      /* dwStackSize          */
+                            ThreadProc,             /* lpStartAddress       */
+                            (LPVOID)p_arg,          /* lpParameter          */
+                            CREATE_SUSPENDED,       /* dwCreationFlags      */
+                            NULL);                  /* lpThreadId           */
+    return (VOID*)h_thread;
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

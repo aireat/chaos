@@ -69,21 +69,21 @@ typedef struct _KERNEL_
 extern KERNEL_t     g_kernel;
 
 VOID     _knl_init(VOID);
-RESULT_t _knl_task_create(P_TASK_t p_task);
-RESULT_t _knl_task_delete(P_TASK_t p_task);
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority);
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+RESULT_t _svc_task_create(P_TASK_t p_task);
+RESULT_t _svc_task_delete(P_TASK_t p_task);
+RESULT_t _svc_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t _svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
 
 #if (_ENABLE_USE_SVC_CALL)
-RESULT_t __svc(0x00) knl_task_create(P_TASK_t p_task);
-RESULT_t __svc(0x01) knl_task_delete(P_TASK_t p_task);
-RESULT_t __svc(0x02) knl_task_ready(P_TASK_t p_task, INT priority);
-RESULT_t __svc(0x03) knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+RESULT_t __svc(0x00) svc_task_create(P_TASK_t p_task);
+RESULT_t __svc(0x01) svc_task_delete(P_TASK_t p_task);
+RESULT_t __svc(0x02) svc_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t __svc(0x03) svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
 #else
-#define _knl_task_create    __knl_task_create
-#define _knl_task_delete    __knl_task_delete
-#define _knl_task_ready     __knl_task_ready
-#define _knl_task_block     __knl_task_block
+#define svc_task_create     _port_svc_task_create
+#define svc_task_delete     _port_svc_task_delete
+#define svc_task_ready      _port_svc_task_ready
+#define svc_task_block      _port_svc_task_block
 #endif
 
 

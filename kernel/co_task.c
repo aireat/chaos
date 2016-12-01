@@ -46,7 +46,7 @@ VOID _task_entry_point(P_TASK_t       p_task,
 
     _K_LOG_TASK("[%s] task deleted. exit code(%d).", p_task->name, result);
 
-    knl_task_delete(p_task);
+    svc_task_delete(p_task);
 }
 
 
@@ -63,6 +63,56 @@ WEAK VOID _port_user_idle(UINT idle_stay_ms)
 {
     //TODO: delete
     idle_stay_ms = 0;
+}
+
+
+RESULT_t _svc_task_create(P_TASK_t p_task)
+{
+    if (g_kernel.task_curr_running == NULL)
+        g_kernel.task_curr_running = p_task;
+
+    // Add task in creation list
+    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
+
+    _sch_make_ready(p_task, p_task->priority);
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _svc_task_delete(P_TASK_t p_task)
+{
+    // Make task as free state
+    _sch_make_free(p_task);
+
+    // Delete task from creation list
+    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
+
+    _knl_do_context_switch();
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _svc_task_ready(P_TASK_t p_task, INT priority)
+{
+    if (p_task->flag & TASK_FLAG_ERROR)
+    {
+        _K_LOG_TASK("[%s] task is seted internal error flag and call task_ready()",
+                    p_task->name);
+        return RESULT_INTERNAL_ERROR;
+    }
+
+    _sch_make_ready(p_task, priority);
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
+{
+    _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
+
+    _knl_do_context_switch();
+
+    return RESULT_SUCCESS;
 }
 
 
@@ -93,13 +143,13 @@ RESULT_t task_create(P_TASK_t       p_task,
     // set-up initial stack
     _port_stack_set_up(p_task, entry_point, p_arg);
 
-    return knl_task_create(p_task);
+    return svc_task_create(p_task);
 }
 
 
 RESULT_t task_delete(P_TASK_t p_task)
 {
-    return knl_task_delete(p_task);
+    return svc_task_delete(p_task);
 }
 
 
@@ -116,7 +166,7 @@ RESULT_t task_block(P_TASK_t p_task)
     if (!(p_task->flag & TASK_FLAG_READY))
         return RESULT_SUCCESS;
 
-    return knl_task_block(p_task, NULL, TASK_TIME_INFINITE);
+    return svc_task_block(p_task, NULL, TASK_TIME_INFINITE);
 }
 
 RESULT_t task_ready(P_TASK_t p_task)
@@ -132,14 +182,14 @@ RESULT_t task_ready(P_TASK_t p_task)
     if (p_task->flag & TASK_FLAG_READY)
         return RESULT_SUCCESS;
 
-    return knl_task_ready(p_task, p_task->priority);
+    return svc_task_ready(p_task, p_task->priority);
 }
 
 RESULT_t task_yield(VOID)
 {
     P_TASK_t p_task = g_kernel.task_curr_running;
 
-    return knl_task_block(p_task, NULL, 0);
+    return svc_task_block(p_task, NULL, 0);
 }
 
 RESULT_t task_sleep(UINT millisecond)
@@ -162,7 +212,7 @@ RESULT_t task_sleep(UINT millisecond)
         return RESULT_INVALID_STATE;
     } 
 
-    return knl_task_block(p_task, NULL, millisecond);
+    return svc_task_block(p_task, NULL, millisecond);
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

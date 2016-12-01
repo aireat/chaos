@@ -44,6 +44,13 @@ VOID _port_do_context_switch(VOID);
 
 extern VOID _port_user_idle(UINT idle_stay_ms);
 
+#if (!_ENABLE_USE_SVC_CALL)
+RESULT_t _port_svc_task_create(P_TASK_t p_task);
+RESULT_t _port_svc_task_delete(P_TASK_t p_task);
+RESULT_t _port_svc_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t _port_svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+#endif
+
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus

@@ -30,12 +30,13 @@
 
 typedef INT (*P_SVC_FUNC)(UINT arg0, UINT arg1, UINT arg2, UINT arg3);
 
+
 CONST P_SVC_FUNC  g_svc_func_table[] =
 {
-    (P_SVC_FUNC) _knl_task_create,
-    (P_SVC_FUNC) _knl_task_delete,
-    (P_SVC_FUNC) _knl_task_ready,
-    (P_SVC_FUNC) _knl_task_block,
+    (P_SVC_FUNC) _svc_task_create,
+    (P_SVC_FUNC) _svc_task_delete,
+    (P_SVC_FUNC) _svc_task_ready,
+    (P_SVC_FUNC) _svc_task_block,
 };
 
 INT _handler_svc(UINT svc_num, UINT *svc_args)

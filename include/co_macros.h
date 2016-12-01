@@ -56,7 +56,7 @@
 */
 /*======================================================================================*/
 #ifndef _CO_TYPE
-#define _CO_TYPE(type, member, addr)    (type*)(((char*)(addr))-(long)&(((type*)0)->member))
+#define _CO_TYPE(type, member, addr)    (type*)(((char*)(addr))-(char*)&(((type*)0)->member))
 #endif
 
 

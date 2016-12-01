@@ -20,7 +20,12 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#ifndef __CO_MUTEX_H__
+#define __CO_MUTEX_H__
+
+#include "type.h"
+#include "co_object.h"
+#include "co_task.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,28 +33,32 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_create_thread(VOID *p_arg);
-
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+/*======================================================================================*/
+/*
+    Control block of Mutex 
+*/
+/*======================================================================================*/
+typedef struct _MUTEX_
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
+    OBJ_HEAD_t      obj_head;
 
-    // create thread as suspend
-    p_task->_h_thread = _windows_create_thread(p_task);
-}
+    P_TASK_t        p_owner_task;
+    
+} MUTEX_t, *P_MUTEX_t;
 
-VOID _windows_thread_entry(VOID *p_arg)
-{
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
 
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
-}
+RESULT_t co_mutex_create(P_MUTEX_t p_mutex);
+
+RESULT_t co_mutex_enter(P_MUTEX_t p_mutex);
+
+RESULT_t co_mutex_leave(P_MUTEX_t p_mutex);
+
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
+
+#endif //__CO_MUTEX_H__
 

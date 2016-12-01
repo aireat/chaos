@@ -21,6 +21,7 @@
 ========================================================================================*/
 
 #include "co_kernel.h"
+#include "co_mutex.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,23 +29,60 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_create_thread(VOID *p_arg);
-
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+INT _cb_mutex_change(P_MUTEX_t p_mutex)
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
-
-    // create thread as suspend
-    p_task->_h_thread = _windows_create_thread(p_task);
+    return 0;
 }
 
-VOID _windows_thread_entry(VOID *p_arg)
+RESULT_t _svc_mutex_enter(P_MUTEX_t p_mutex, P_TASK_t p_task)
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+    if (p_mutex->p_owner_task == NULL)
+    {
+        p_mutex->p_owner_task = p_task;
 
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+        return RESULT_SUCCESS;
+    }
+
+    if (p_task->priority > p_mutex->p_owner_task->priority)
+    {
+        _svc_task_ready(p_mutex->p_owner_task, p_task->priority);
+    }
+
+    _svc_task_block(p_task, p_mutex, 0);
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _svc_mutex_leave(P_MUTEX_t p_mutex)
+{
+    return RESULT_SUCCESS;
+}
+
+RESULT_t co_mutex_create(P_MUTEX_t p_mutex)
+{
+    // init object head
+    {
+        dlist_init_list(&(p_mutex->obj_head.dlist_wait_tasks));
+        p_mutex->obj_head.change_callback = (P_CHANGE_CALLBACK_t) _cb_mutex_change;
+        p_mutex->obj_head.change_count = 0;
+    }
+
+    // init mutex
+    {
+        p_mutex->p_owner_task = NULL;
+    }
+
+    return RESULT_SUCCESS;
+}
+
+RESULT_t co_mutex_enter(P_MUTEX_t p_mutex)
+{
+    return RESULT_SUCCESS;
+}
+
+RESULT_t co_mutex_leave(P_MUTEX_t p_mutex)
+{
+    return RESULT_SUCCESS;
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

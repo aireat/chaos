@@ -130,7 +130,7 @@ VOID _knl_check_changes(VOID)
             p_object = (P_OBJ_HEAD_t) p_task->dnode_task.p_list;
             if (p_object->change_count > 0)
             {
-                if (p_object->change_callback())
+                if (p_object->change_callback(p_object))
                     continue;
             }
         }

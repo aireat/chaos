@@ -24,7 +24,8 @@
 #define __CONFIG_USER_H__
 
 #include "type.h"
-#include "WinBase.h"
+//#include "WinBase.h"
+//#include "windows.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -40,7 +41,7 @@
 /*======================================================================================*/
 
 
-#define _PORT_TASK_EXTENSION_       HANDLE              _h_thread;                      \
+#define _PORT_TASK_EXTENSION_       VOID               *_h_thread;                      \
                                     VOID               *_p_entry_point;                 \
                                     VOID               *_p_arg;                         \
 

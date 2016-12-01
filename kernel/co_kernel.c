@@ -44,55 +44,6 @@ VOID _knl_init(VOID)
     g_kernel.sch.p_ready0 = g_kernel.sch.ready;
 }
 
-RESULT_t _knl_task_create(P_TASK_t p_task)
-{
-    if (g_kernel.task_curr_running == NULL)
-        g_kernel.task_curr_running = p_task;
-
-    // Add task in creation list
-    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    _sch_make_ready(p_task, p_task->priority);
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_delete(P_TASK_t p_task)
-{
-    // Make task as free state
-    _sch_make_free(p_task);
-
-    // Delete task from creation list
-    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    _knl_do_context_switch();
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority)
-{
-    if (p_task->flag & TASK_FLAG_ERROR)
-    {
-        _K_LOG_TASK("[%s] task is seted internal error flag and call task_ready()",
-                    p_task->name);
-        return RESULT_INTERNAL_ERROR;
-    }
-
-    _sch_make_ready(p_task, priority);
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
-{
-    _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
-
-    _knl_do_context_switch();
-
-    return RESULT_SUCCESS;
-}
-
 
 VOID _co_memset(VOID *p_memory, BYTE value, INT size)
 {

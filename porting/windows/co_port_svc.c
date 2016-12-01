@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#include "co_port.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,23 +28,24 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_create_thread(VOID *p_arg);
-
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+RESULT_t _port_svc_task_create(P_TASK_t p_task)
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
-
-    // create thread as suspend
-    p_task->_h_thread = _windows_create_thread(p_task);
+    return RESULT_SUCCESS;
 }
 
-VOID _windows_thread_entry(VOID *p_arg)
+RESULT_t _port_svc_task_delete(P_TASK_t p_task)
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+    return RESULT_SUCCESS;
+}
 
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+RESULT_t _port_svc_task_ready(P_TASK_t p_task, INT priority)
+{
+    return RESULT_SUCCESS;
+}
+
+RESULT_t _port_svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
+{
+    return RESULT_SUCCESS;
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
