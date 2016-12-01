@@ -20,7 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#ifndef __CONFIG_USER_H__
+#define __CONFIG_USER_H__
+
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,24 +32,25 @@
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
 
-INT _task_idle(VOID *p_arg)
-{
-    p_arg = 0x00;
-    _port_user_idle(g_kernel.idle_stay_ms);
+/*======================================================================================*/
+/*
+    Setting for Windows system
+*/
+/*======================================================================================*/
 
+#define _SYSTEM_TICK_TIME               10
 
-    return 0;
-}
+#define _IMPLEMENT_CLZ_BY_SW            0
 
-WEAK VOID _port_user_idle(UINT idle_stay_ms)
-{
-    //TODO: delete
-    idle_stay_ms = 0;
-}
+#define _ENABLE_USE_SVC_CALL            1
+
+#define _PORT_TASK_EXTENSION_
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
+
+#endif //__CONFIG_USER_H__
 

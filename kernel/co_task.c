@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,11 +28,51 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+
+VOID _task_entry_point(P_TASK_t       p_task,
+                       P_TASK_PROC_t  entry_point,
+                       VOID          *p_arg,
+                       INT            result)
+{
+    INT     i = 0;
+	while(1)
+    {
+        i++;
+    }
+    _K_LOG_TASK("[%s] task created.", p_task->name);
+
+    // call entry point
+    result = entry_point(p_arg);
+
+    _K_LOG_TASK("[%s] task deleted. exit code(%d).", p_task->name, result);
+
+    knl_task_delete(p_task);
+}
+
+
+INT _task_idle(VOID *p_arg)
+{
+    p_arg = 0x00;
+    //_port_user_idle(g_kernel.idle_stay_ms);
+
+
+    while(1);
+}
+
+WEAK VOID _port_user_idle(UINT idle_stay_ms)
+{
+    //TODO: delete
+    idle_stay_ms = 0;
+}
+
+
 RESULT_t task_create(P_TASK_t       p_task,
                      P_TASK_PROC_t  entry_point,
-                     VOID          *p_arg,
-                     TASK_OPT_t     option_flag)
+                     VOID          *p_arg)
 {
+    if (p_task->priority == 0)
+        return RESULT_TASK_INVALID_PRIORITY;
+
     // check priority
     p_task->priority = (INT8)(_CO_MIN((p_task->priority), 
                                       (_MAXIMUM_PRIORITY)) - 1);
@@ -44,7 +84,7 @@ RESULT_t task_create(P_TASK_t       p_task,
 
     #if (_STACK_GROWS_DOWN)
         {
-            p_task->stack_size_trace += (p_task->scratch >> 2);
+            p_task->stack_size_trace += (p_task->scratch >> 2) - 1;
         }
     #endif
     }
@@ -53,13 +93,13 @@ RESULT_t task_create(P_TASK_t       p_task,
     // set-up initial stack
     _port_stack_set_up(p_task, entry_point, p_arg);
 
-    return _knl_task_create(p_task, option_flag);
+    return knl_task_create(p_task);
 }
 
 
 RESULT_t task_delete(P_TASK_t p_task)
 {
-    return _knl_task_delete(p_task);
+    return knl_task_delete(p_task);
 }
 
 
@@ -76,7 +116,7 @@ RESULT_t task_block(P_TASK_t p_task)
     if (!(p_task->flag & TASK_FLAG_READY))
         return RESULT_SUCCESS;
 
-    return _knl_task_block(p_task, NULL, TASK_TIME_INFINITE);
+    return knl_task_block(p_task, NULL, TASK_TIME_INFINITE);
 }
 
 RESULT_t task_ready(P_TASK_t p_task)
@@ -92,14 +132,14 @@ RESULT_t task_ready(P_TASK_t p_task)
     if (p_task->flag & TASK_FLAG_READY)
         return RESULT_SUCCESS;
 
-    return _knl_task_ready(p_task, p_task->priority);
+    return knl_task_ready(p_task, p_task->priority);
 }
 
 RESULT_t task_yield(VOID)
 {
     P_TASK_t p_task = g_kernel.task_curr_running;
 
-    return _knl_task_block(p_task, NULL, 0);
+    return knl_task_block(p_task, NULL, 0);
 }
 
 RESULT_t task_sleep(UINT millisecond)
@@ -122,7 +162,7 @@ RESULT_t task_sleep(UINT millisecond)
         return RESULT_INVALID_STATE;
     } 
 
-    return _knl_task_block(p_task, NULL, millisecond);
+    return knl_task_block(p_task, NULL, millisecond);
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

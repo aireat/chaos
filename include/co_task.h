@@ -94,12 +94,6 @@
 
 #define TASK_TIME_INFINITE              (0xFFFFFFFF)
 
-typedef enum
-{
-    TASK_OPT_NONE               = (0),
-    TASK_OPT_BLOCKED            = (1 << 0),
-
-} TASK_OPT_t;
 
 /*======================================================================================*/
 /*
@@ -116,7 +110,7 @@ typedef struct _TASK_
     DNODE_t         dnode_task;
 
     INT16           flag;
-    INT16           priority;
+    UINT16          priority;
     UINT            scratch;                /* [ scratch usage ]                        */
                                             /*   state  |   mean                        */
                                             /* ---------|------------------------------ */
@@ -146,8 +140,7 @@ typedef INT (*P_TASK_PROC_t)(VOID *p_arg);
 
 RESULT_t task_create(P_TASK_t       p_task,
                      P_TASK_PROC_t  entry_point,
-                     VOID          *p_arg,
-                     TASK_OPT_t     option_flag);
+                     VOID          *p_arg);
 
 RESULT_t task_delete(P_TASK_t p_task);
 

@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,71 +28,46 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+typedef INT (*P_SVC_FUNC)(UINT arg0, UINT arg1, UINT arg2, UINT arg3);
 
-/*======================================================================================*/
-/*
-    Global variable
-*/
-/*======================================================================================*/
-KERNEL_t     g_kernel;
-
-
-VOID __knl_init(VOID)
+CONST P_SVC_FUNC  g_svc_func_table[] =
 {
-    _co_memset(&g_kernel, 0x00, sizeof(g_kernel));
+    (P_SVC_FUNC) _knl_task_create,
+    (P_SVC_FUNC) _knl_task_delete,
+    (P_SVC_FUNC) _knl_task_ready,
+    (P_SVC_FUNC) _knl_task_block,
+};
 
-    g_kernel.sch.p_ready0 = g_kernel.sch.ready;
-}
-
-RESULT_t _knl_task_create(P_TASK_t p_task, TASK_OPT_t option_flag)
+INT _handler_svc(UINT svc_num, UINT *svc_args)
 {
-    // Add task in creation list
-    slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
+    // - Stacked R0   = svc_args[0]
+    // - Stacked R1   = svc_args[1]
+    // - Stacked R2   = svc_args[2]
+    // - Stacked R3   = svc_args[3]
+    // - Stacked R12  = svc_args[4]
+    // - Stacked LR   = svc_args[5]
+    // - Stacked PC   = svc_args[6]
+    // - Stacked xPSR = svc_args[7]
 
-    // Make task as ready state
-    if (!(option_flag & TASK_OPT_BLOCKED))
+    if (svc_num < _CO_ARRAY_COUNT(g_svc_func_table))
     {
-        _sch_make_ready(p_task, p_task->priority);
+        return g_svc_func_table[svc_num](svc_args[0],
+                                         svc_args[1],
+                                         svc_args[2],
+                                         svc_args[3]);
     }
 
-    return RESULT_SUCCESS;
+    return -1;
 }
 
-RESULT_t _knl_task_delete(P_TASK_t p_task)
+VOID _handler_systick(VOID)
 {
-    // Make task as free state
-    _sch_make_free(p_task);
+    g_kernel.system_tick += _SYSTEM_TICK_TIME;
 
-    // Delete task from creation list
-    slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    _knl_do_context_switch();
-
-    return RESULT_SUCCESS;
+    //if (g_kernel.task_curr_running == g_kernel.task_idle)
+        _knl_do_context_switch();
 }
 
-RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority)
-{
-    if (p_task->flag & TASK_FLAG_ERROR)
-    {
-        _K_LOG_TASK("[%s] task is seted internal error flag and call task_ready()",
-                    p_task->name);
-        return RESULT_INTERNAL_ERROR;
-    }
-
-    _sch_make_ready(p_task, priority);
-
-    return RESULT_SUCCESS;
-}
-
-RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
-{
-    _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
-
-    _knl_do_context_switch();
-
-    return RESULT_SUCCESS;
-}
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

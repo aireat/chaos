@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,15 +28,30 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+DEF_TASK(idle, 1, _TASK_IDLE_STACK_SIZE);
 
-VOID __handler_systick(VOID)
+VOID chaos_start(P_TASK_t       p_task,
+                P_TASK_PROC_t  entry_point,
+                VOID          *p_arg)
 {
-    g_kernel.system_tick += _MS_VALUE_PER_A_TICK;
+    // initialize kernel
+    _knl_init();
 
-    if (g_kernel.task_curr_running == g_kernel.task_idle)
-        _knl_do_context_switch();
+    // initialize system
+    _port_system_init();
+    
+    // create basic task
+    {
+        // create idle task
+        task_create(&idle, _task_idle, NULL);
+
+        // create main task
+        task_create(p_task, entry_point, p_arg);
+    }
+
+    // start system
+    _port_system_start();
 }
-
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

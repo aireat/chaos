@@ -24,6 +24,7 @@
 #define __CONFIG_DEFAULT_H__
 
 #include "type.h"
+#include "config_user.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -59,8 +60,8 @@
 #define _ENABLE_USE_SVC_CALL            0
 #endif
 
-#ifndef _MS_VALUE_PER_A_TICK
-#define _MS_VALUE_PER_A_TICK            10
+#ifndef _SYSTEM_TICK_TIME
+#define _SYSTEM_TICK_TIME               10
 #endif
 
 #ifndef _STACK_GROWS_DOWN

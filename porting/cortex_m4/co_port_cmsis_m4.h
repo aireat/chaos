@@ -20,7 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#ifndef __CO_PORT_CMSIS_H__
+#define __CO_PORT_CMSIS_H__
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,34 +29,39 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-DEF_TASK(idle, 0, _TASK_IDLE_STACK_SIZE);
-
-VOID co_rtos_start(P_TASK_t       p_task,
-                   P_TASK_PROC_t  entry_point,
-                   VOID          *p_arg)
+typedef enum IRQn
 {
-    // initialize kernel
-    __knl_init();
+    /* Core interrupts */
+    NonMaskableInt_IRQn          = -14,              /**< Non Maskable Interrupt */
+    HardFault_IRQn               = -13,              /**< Cortex-M4 SV Hard Fault Interrupt */
+    MemoryManagement_IRQn        = -12,              /**< Cortex-M4 Memory Management Interrupt */
+    BusFault_IRQn                = -11,              /**< Cortex-M4 Bus Fault Interrupt */
+    UsageFault_IRQn              = -10,              /**< Cortex-M4 Usage Fault Interrupt */
+    SVCall_IRQn                  = -5,               /**< Cortex-M4 SV Call Interrupt */
+    DebugMonitor_IRQn            = -4,               /**< Cortex-M4 Debug Monitor Interrupt */
+    PendSV_IRQn                  = -2,               /**< Cortex-M4 Pend SV Interrupt */
+    SysTick_IRQn                 = -1,               /**< Cortex-M4 System Tick Interrupt */
 
-    // initialize system
-    _port_system_init();
-    
-    // create basic task
-    {
-        // create idle task
-        task_create(&idle, _task_idle, NULL, TASK_OPT_NONE);
+} IRQn_Type;
 
-        // create main task
-        task_create(p_task, entry_point, p_arg, TASK_OPT_NONE);
-    }
+/*======================================================================================*/
+/*
+    Setting for Windows system
+*/
+/*======================================================================================*/
 
-    // start system
-    _port_system_start();
-}
+#define __MPU_PRESENT                  0         /**< Defines if an MPU is present or not */
+#define __NVIC_PRIO_BITS               4         /**< Number of priority bits implemented in the NVIC */
+#define __Vendor_SysTickConfig         0         /**< Vendor specific implementation of SysTickConfig is defined */
+#define __FPU_PRESENT                  1         /**< Defines if an FPU is present or not */
+
+#include "core_cm4.h"
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
+
+#endif //__CO_PORT_CMSIS_H__
 

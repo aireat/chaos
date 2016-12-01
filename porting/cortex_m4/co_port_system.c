@@ -20,10 +20,8 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __HANDLER_H__
-#define __HANDLER_H__
-
-#include "type.h"
+#include "co_kernel.h"
+#include "co_port_cmsis_m4.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -31,16 +29,66 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+extern uint32_t SystemCoreClock;
 
-VOID __handler_systick(VOID);
-VOID __handler_svc(VOID);
+VOID __start_first_task(VOID);
 
+VOID _port_system_init(VOID)
+{
+    // nothing
+}
+
+VOID _port_system_start(VOID)
+{
+    __disable_irq();
+
+    SysTick_Config(SystemCoreClock/1000*_SYSTEM_TICK_TIME);
+
+    __start_first_task();
+}
+
+__ASM__ VOID __start_first_task(VOID)
+{
+    IMPORT  __Vectors
+    IMPORT  g_kernel
+
+    LDR     R0, =__Vectors
+    LDR     R0, [R0] 
+    MSR     MSP, R0                 /* Set the msp back to the start of the stack. */
+
+    LDR     R3, =g_kernel           /* Obtain first task */
+    LDR     R3, [R3]
+    LDR     R1, [R3]                /* Obtain first task's stack */
+
+//    ADDS    R1, #32                 /* Discard everything up to r0. */
+    MSR     PSP, R1                 /* This is now the new top of stack to use in the task. */
+
+//    MRS     R0, CONTROL
+//    ORR     R0, R0, #2                  /* Switch to the psp stack. */
+    MOVS    R0, #2
+    MSR     CONTROL, R0
+
+    POP     {R4-R11, R14}
+    POP     {R0-R3, R12, R14}                 /* Pop the registers that are saved automatically. */
+//    MOV     LR, R5                  /* lr is now in r5. */
+
+    CPSIE   I                       /* Enable Interrupt [__enable_irq()] */
+
+    POP     {PC}                    /* Finally, pop the PC to jump to the user defined task code. */
+    ALIGN
+}
+
+VOID _port_do_context_switch(VOID)
+{
+    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+
+    __DSB();
+    __ISB();
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
-
-#endif //__HANDLER_H__
 

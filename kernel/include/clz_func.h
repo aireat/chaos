@@ -23,7 +23,7 @@
 #ifndef __CLZ_FUNC_H__
 #define __CLZ_FUNC_H__
 
-#include "kernel.h"
+#include "type.h"
 
 #ifdef __cplusplus
     extern "C" {

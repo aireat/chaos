@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -39,9 +39,9 @@ VOID _knl_do_context_switch(VOID)
     g_kernel.task_next_running = _sch_get_next_task();
     if (g_kernel.task_next_running != g_kernel.task_curr_running)
     {
-        g_kernel.task_next_running = g_kernel.task_curr_running;
+        //g_kernel.task_next_running = g_kernel.task_curr_running;
 
-        //_PORT_DO_CONTEXT_SWITCH();
+        _port_do_context_switch();
     }
 }
 
@@ -142,7 +142,7 @@ VOID _knl_check_changes(VOID)
         // check timeout
         if (p_task->flag & TASK_FLAG_TIMEOUT)
         {
-            if (p_task->scratch <= _MS_VALUE_PER_A_TICK)
+            if (p_task->scratch <= _SYSTEM_TICK_TIME)
             {
                 _sch_make_ready(p_task, p_task->priority);
 
@@ -152,7 +152,7 @@ VOID _knl_check_changes(VOID)
                 continue;
             }
 
-            p_task->scratch -= _MS_VALUE_PER_A_TICK;
+            p_task->scratch -= _SYSTEM_TICK_TIME;
         }
     }
 }

@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,49 +28,66 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)\
-__ASM__ 
+__ASM__ VOID chaos_svc_handler(VOID)
 {
-    INT *p_top;
+    TST     LR, #4                  // LR 비트 2 안에 있는 EXE_RETURN 번호를 테스트
+    ITE     EQ                      // 만약 0(같으면) 이면,
+    MRSEQ   R1, MSP                 // 메인 스택이 사용되고, MSP를 R0에 넣음
+    MRSNE   R1, PSP                 // 그렇지 않으면 PSP를 R0에 넣음
 
-    // make growing down initial stack
+    LDR     R0, [R1, #24]           // PC 값을 얻음
+    LDRB    R0, [R0, #-2]           // SVC 번호를 얻음
 
-    // move to top of stack
-    {
-        p_top  = (INT*)p_task->stack_addr;
-        p_top += (p_task->scratch >> 2);
-    }
-
-    // Initialize register
-    {
-        p_top[  0] = (INT) 0xAA;                    // 01. TOP
-        p_top[ -1] = (INT) 0x01000000;              // 02. PSR
-        p_top[ -2] = (INT) _task_entry_point;       // 03. PC
-
-        p_top[ -5] = (INT) 0x00;                    // 06. R3
-        p_top[ -6] = (INT) p_arg;                   // 07. R2
-        p_top[ -7] = (INT) entry_point;             // 08. R1
-        p_top[ -8] = (INT) p_task;                  // 09. R0
-
-#if (_ENABLE_STACK_TRACE)
-        p_top[ -3] = (INT) 0x00;                    // 04. LR
-        p_top[ -4] = (INT) 0x00;                    // 05. R12
-
-        p_top[ -9] = (INT) 0x00;                    // 10. R11
-        p_top[-10] = (INT) 0x00;                    // 11. R10
-        p_top[-11] = (INT) 0x00;                    // 12. R9
-        p_top[-12] = (INT) 0x00;                    // 13. R8
-        p_top[-13] = (INT) 0x00;                    // 14. R7
-        p_top[-14] = (INT) 0x00;                    // 15. R6
-        p_top[-15] = (INT) 0x00;                    // 16. R5
-        p_top[-16] = (INT) 0x00;                    // 17. R4
-#endif
-    }
-
-    p_task->stack_addr = &(p_top[-16]);
+    LDR     R2, =__cpp(_handler_svc)
+    BX      R2
 }
 
+VOID chaos_systick_handler(VOID)
+{
+    _handler_systick();
+}
+
+
+
+__ASM__ VOID chaos_pendsvc_handler(VOID)
+{
+    IMPORT          g_kernel;
+
+    /* get PSP(process stack pointer) of current task */
+    MRS         R0, PSP
+    ISB
+
+    /* load address of current task */
+    LDR         R3, =g_kernel
+    LDR         R2, [R3]
+
+    /* save FPU/System registers */
+//    TST         R14, #0x10
+//    IT          EQ
+//    VSTMDBEQ    R0!, {S16-S31}
+    STMDB       R0!, {R4-R11, R14}
+
+    /* save new SP of current task */
+    STR         R0, [R2]
+
+
+    /* load SP of next task */
+    ADDS        R3, #4
+    LDR         R3, [R3]
+    LDR         R0, [R3]
+
+    /* restore FUP/System registers */
+    LDMIA       R0!, {R4-R11, R14}
+//    TST         R14, #0x10
+//    IT          EQ
+//    VLDMIAEQ    R0!, {S16-S31}
+
+    /* set PSP(process stack pointer) of new task */
+    MSR         PSP, R0
+    ISB
+    
+    BX          R14
+}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

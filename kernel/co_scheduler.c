@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "kernel.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -97,7 +97,7 @@ P_TASK_t _sch_get_next_task(VOID)
     // no ready task.
     else
     {
-        g_kernel.idle_stay_ms += _MS_VALUE_PER_A_TICK;
+        g_kernel.idle_stay_ms += _SYSTEM_TICK_TIME;
 
         return g_kernel.task_idle;
     }

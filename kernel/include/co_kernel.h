@@ -20,11 +20,23 @@
 *                                                                                      *
 ========================================================================================*/
 
-#ifndef __CO_SYSTEM_H__
-#define __CO_SYSTEM_H__
+#ifndef __KERNEL_H__
+#define __KERNEL_H__
+
 
 #include "type.h"
-#include "co_task.h"
+#include "chaos.h"
+
+#include "k_log.h"
+#include "clz_func.h"
+#include "scheduler.h"
+#include "utility.h"
+
+#include "co_handler.h"
+#include "switcher.h"
+#include "task_entry.h"
+#include "task_idle.h"
+
 
 #ifdef __cplusplus
     extern "C" {
@@ -32,10 +44,47 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+typedef struct _KERNEL_
+{
+    P_TASK_t        task_curr_running;
+    P_TASK_t        task_next_running;
+    P_TASK_t        task_idle;
+    
+    UINT            system_tick;
+    UINT            system_tick_check;
+#if (_ENABLE_STACK_TRACE)
+    UINT            system_tick_stack_trace;
+#endif
+    
+    UINT            idle_stay_ms;
 
-VOID chaos_start(P_TASK_t       p_task,
-                P_TASK_PROC_t  entry_point,
-                VOID          *p_arg);
+    SLIST_t         slist_task;
+    SLIST_t         slist_resource;
+
+    SCHEDULER_t     sch;
+
+} KERNEL_t, *P_KERNEL_t;
+
+
+extern KERNEL_t     g_kernel;
+
+VOID     _knl_init(VOID);
+RESULT_t _knl_task_create(P_TASK_t p_task);
+RESULT_t _knl_task_delete(P_TASK_t p_task);
+RESULT_t _knl_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t _knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+
+#if (_ENABLE_USE_SVC_CALL)
+RESULT_t __svc(0x00) knl_task_create(P_TASK_t p_task);
+RESULT_t __svc(0x01) knl_task_delete(P_TASK_t p_task);
+RESULT_t __svc(0x02) knl_task_ready(P_TASK_t p_task, INT priority);
+RESULT_t __svc(0x03) knl_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms);
+#else
+#define _knl_task_create    __knl_task_create
+#define _knl_task_delete    __knl_task_delete
+#define _knl_task_ready     __knl_task_ready
+#define _knl_task_block     __knl_task_block
+#endif
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
@@ -44,5 +93,5 @@ VOID chaos_start(P_TASK_t       p_task,
     } /* extern "C" */
 #endif
 
-#endif //__CO_SYSTEM_H__
+#endif //__KERNEL_H__
 
