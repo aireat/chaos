@@ -4,8 +4,16 @@
 .vscode/**/*.db*
 
 # Build folder
-**/build/**
 **/bin/**
+**/debug/**
+**/release/**
+**/ipch/**
+**/x64/**
+
+# helper files
+*.bak
+*.sdf
+*.user
 
 # Object files
 *.o
