@@ -20,7 +20,10 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#ifndef __SVC_RINGBUFF_H__
+#define __SVC_RINGBUFF_H__
+
+
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,37 +31,34 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_thread_create(VOID *p_arg);
-extern VOID* _windows_event_create(int bManualReset);
-extern VOID  _windows_event_wait(VOID *handle);
+#define     SVC_ARG_COUNT       5
 
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+typedef struct
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
+    unsigned int    num;
+    unsigned int    args[4];
 
-    // make event as AutoReset for thread
-    p_task->_h_thread_event = _windows_event_create(FALSE);
+} svc_arg_t;
 
-    // create thread as suspend
-    p_task->_h_thread = _windows_thread_create(p_task);
-}
-
-VOID _windows_thread_entry(VOID *p_arg)
+typedef struct
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+    int             head;           /*!< @brief head it move up when data is added.     */
+    int             tail;           /*!< @brief tail it move up when data is removed.   */
+    int             size;           /*!< @brief size it is size of a ring buffer.       */
 
-    // wait signal to start thread
-    _windows_event_wait(p_task->_h_thread_event);
+    svc_arg_t       data[SVC_ARG_COUNT];
 
-    // start thread
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
-}
+} svc_buff_t;
+
+void _svcbuff_init(svc_buff_t *p_cb, int size);
+int  _svcbuff_push(svc_buff_t *p_cb, svc_arg_t *p_data);
+int  _svcbuff_pop(svc_buff_t *p_cb, svc_arg_t *p_data);
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
     } /* extern "C" */
 #endif
+
+#endif //__SVC_RINGBUFF_H__
 

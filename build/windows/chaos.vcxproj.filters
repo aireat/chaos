@@ -142,7 +142,13 @@
     <ClCompile Include="..\..\porting\windows\co_port_svc.c">
       <Filter>port_windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\porting\windows\windows_thread.cpp">
+    <ClCompile Include="..\..\porting\windows\co_port_system.c">
+      <Filter>port_windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\porting\windows\windows_api.cpp">
+      <Filter>port_windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\porting\windows\svc_ringbuff.c">
       <Filter>port_windows</Filter>
     </ClCompile>
   </ItemGroup>

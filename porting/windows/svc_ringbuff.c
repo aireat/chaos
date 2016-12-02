@@ -20,40 +20,70 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "stdafx.h"
+#include "svc_ringbuff.h"
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID _windows_thread_entry(VOID *p_arg);
 
-DWORD WINAPI ThreadProc(LPVOID lpParameter)
+void _svcbuff_init(svc_buff_t *p_cb, int size)
 {
-    _windows_thread_entry(lpParameter);
+    p_cb->head = 0;
+    p_cb->tail = 0;
+    p_cb->size = size;
+}
+
+
+int  _svcbuff_push(svc_buff_t *p_cb, svc_arg_t *p_data)
+{
+    int     next;
+
+    // Get next index to store a data
+    next = p_cb->head + 1;
+    if (next >= p_cb->size)
+        next = 0;
+
+    // Check the index is available.
+    // (head + 1) is equal to tail ==> the buffer is full
+    if (next == p_cb->tail)
+        return 0;
+
+    // Store the data and update head value
+    p_cb->data[p_cb->head] = *p_data;
+    p_cb->head = next;
+
+    return 1;
+}
+
+
+int  _svcbuff_pop(svc_buff_t *p_cb, svc_arg_t *p_data)
+{
+    int     next;
     
-    return 0;
+    // Check a data is available
+    // Head is equal to head ==> the buffer is empty
+    if (p_cb->head == p_cb->tail)
+        return 0;
+
+    *p_data = p_cb->data[p_cb->tail];
+
+    // Move next index
+    next = p_cb->tail + 1;
+    if (next >= p_cb->size)
+        next = 0;
+
+    p_cb->tail = next;
+
+    return 1;
 }
 
-VOID* _windows_create_thread(VOID *p_arg)
-{
-    HANDLE  h_thread;
-
-    // create thread as suspend
-    h_thread = CreateThread(NULL,                   /* lpThreadAttributes   */
-                            0,                      /* dwStackSize          */
-                            ThreadProc,             /* lpStartAddress       */
-                            (LPVOID)p_arg,          /* lpParameter          */
-                            CREATE_SUSPENDED,       /* dwCreationFlags      */
-                            NULL);                  /* lpThreadId           */
-    return (VOID*)h_thread;
-}
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
-    } /* extern "C" */
+} /* extern "C" */
 #endif
 

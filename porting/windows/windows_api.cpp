@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#include "stdafx.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,32 +28,50 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_thread_create(VOID *p_arg);
-extern VOID* _windows_event_create(int bManualReset);
-extern VOID  _windows_event_wait(VOID *handle);
+extern VOID _windows_thread_entry(VOID *p_arg);
 
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+DWORD WINAPI ThreadProc(LPVOID lpParameter)
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
-
-    // make event as AutoReset for thread
-    p_task->_h_thread_event = _windows_event_create(FALSE);
-
-    // create thread as suspend
-    p_task->_h_thread = _windows_thread_create(p_task);
+    _windows_thread_entry(lpParameter);
+    
+    return 0;
 }
 
-VOID _windows_thread_entry(VOID *p_arg)
+VOID* _windows_thread_create(VOID *p_arg)
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+    HANDLE  h_thread;
 
-    // wait signal to start thread
-    _windows_event_wait(p_task->_h_thread_event);
+    // create thread as suspend
+    h_thread = CreateThread(NULL,                   /* lpThreadAttributes   */
+                            0,                      /* dwStackSize          */
+                            ThreadProc,             /* lpStartAddress       */
+                            (LPVOID)p_arg,          /* lpParameter          */
+                            NULL,                   /* dwCreationFlags      */
+                            NULL);                  /* lpThreadId           */
+    return (VOID*) h_thread;
+}
 
-    // start thread
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+VOID* _windows_event_create(int bManualReset)
+{
+    HANDLE  h_event;
+
+    h_event = CreateEvent(NULL, bManualReset, FALSE, NULL);
+
+    return (VOID*) h_event;
+}
+
+VOID _windows_event_set(VOID *handle)
+{
+    SetEvent((HANDLE)handle);
+}
+
+VOID _windows_event_wait(VOID *handle)
+{
+    while (1)
+    {
+        if (WaitForSingleObject((HANDLE)handle, INFINITE) == WAIT_OBJECT_0)
+            break;
+    }
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

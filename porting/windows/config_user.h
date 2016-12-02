@@ -42,6 +42,7 @@
 
 
 #define _PORT_TASK_EXTENSION_       VOID               *_h_thread;                      \
+                                    VOID               *_h_thread_event;                \
                                     VOID               *_p_entry_point;                 \
                                     VOID               *_p_arg;                         \
 

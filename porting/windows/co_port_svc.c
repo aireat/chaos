@@ -21,6 +21,7 @@
 ========================================================================================*/
 
 #include "co_port.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,23 +29,53 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+extern BOOL    g_system_started;
+extern VOID  _windows_event_wait(VOID *handle);
+
 RESULT_t _port_svc_task_create(P_TASK_t p_task)
 {
+    if (g_system_started == TRUE)
+    {
+        P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+
+        // wait next scheduling
+        _windows_event_wait(p_cur_task->_h_thread_event);
+    }
+    else
+    {
+
+    }
+
     return RESULT_SUCCESS;
 }
 
 RESULT_t _port_svc_task_delete(P_TASK_t p_task)
 {
+    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+
+    // wait next scheduling
+    _windows_event_wait(p_cur_task->_h_thread_event);
+
     return RESULT_SUCCESS;
 }
 
 RESULT_t _port_svc_task_ready(P_TASK_t p_task, INT priority)
 {
+    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+
+    // wait next scheduling
+    _windows_event_wait(p_cur_task->_h_thread_event);
+
     return RESULT_SUCCESS;
 }
 
 RESULT_t _port_svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
 {
+    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+
+    // wait next scheduling
+    _windows_event_wait(p_cur_task->_h_thread_event);
+
     return RESULT_SUCCESS;
 }
 

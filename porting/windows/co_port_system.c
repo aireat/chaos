@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_kernel.h"
+#include "co_port.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,32 +28,16 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern VOID* _windows_thread_create(VOID *p_arg);
-extern VOID* _windows_event_create(int bManualReset);
-extern VOID  _windows_event_wait(VOID *handle);
+extern BOOL    g_system_started;
 
-VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg)
+VOID _port_system_init(VOID)
 {
-    p_task->_p_entry_point = entry_point;
-    p_task->_p_arg = p_arg;
-
-    // make event as AutoReset for thread
-    p_task->_h_thread_event = _windows_event_create(FALSE);
-
-    // create thread as suspend
-    p_task->_h_thread = _windows_thread_create(p_task);
+    g_system_started = FALSE;
 }
 
-VOID _windows_thread_entry(VOID *p_arg)
+VOID _port_system_start(VOID)
 {
-    P_TASK_t        p_task = (P_TASK_t) p_arg;
-    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
-
-    // wait signal to start thread
-    _windows_event_wait(p_task->_h_thread_event);
-
-    // start thread
-    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+    g_system_started = TRUE;
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
