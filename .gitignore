@@ -3,6 +3,9 @@
 .vscode/**/*.DB*
 .vscode/**/*.db*
 
+# Visual Studio
+**/.vs/**
+
 # Build folder
 **/bin/**
 **/debug/**

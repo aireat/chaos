@@ -22,6 +22,7 @@
 
 #include "co_port.h"
 #include "co_kernel.h"
+#include "svc_ringbuff.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -29,21 +30,35 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern BOOL    g_system_started;
-extern VOID  _windows_event_wait(VOID *handle);
+extern BOOL         g_system_started;
+extern svc_buff_t   g_svcbuff;
+
+extern int   _windows_event_wait(void *handle, unsigned int m_seconds);
 
 RESULT_t _port_svc_task_create(P_TASK_t p_task)
 {
     if (g_system_started == TRUE)
     {
         P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+        svc_arg_t   svc_call;
+
+#pragma warning(push)
+#pragma warning(disable: 4312)
+        {
+            svc_call.num = 0x00;
+            svc_call.args[0] = (void*) p_task;
+        }
+#pragma warning(pop)
+
+        // request svc call
+        _svcbuff_push(&g_svcbuff, &svc_call);
 
         // wait next scheduling
-        _windows_event_wait(p_cur_task->_h_thread_event);
+        _windows_event_wait(p_cur_task->_h_thread_event, 0xFFFFFFFF);
     }
     else
     {
-
+        _svc_task_create(p_task);
     }
 
     return RESULT_SUCCESS;
@@ -51,30 +66,90 @@ RESULT_t _port_svc_task_create(P_TASK_t p_task)
 
 RESULT_t _port_svc_task_delete(P_TASK_t p_task)
 {
-    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+    if (g_system_started == TRUE)
+    {
+        P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+        svc_arg_t   svc_call;
 
-    // wait next scheduling
-    _windows_event_wait(p_cur_task->_h_thread_event);
+#pragma warning(push)
+#pragma warning(disable: 4312)
+        {
+            svc_call.num = 0x01;
+            svc_call.args[0] = (void*)p_task;
+        }
+#pragma warning(pop)
+
+        // request svc call
+        _svcbuff_push(&g_svcbuff, &svc_call);
+
+        // wait next scheduling
+        _windows_event_wait(p_cur_task->_h_thread_event, 0xFFFFFFFF);
+    }
+    else
+    {
+        _svc_task_delete(p_task);
+    }
 
     return RESULT_SUCCESS;
 }
 
 RESULT_t _port_svc_task_ready(P_TASK_t p_task, INT priority)
 {
-    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+    if (g_system_started == TRUE)
+    {
+        P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+        svc_arg_t   svc_call;
 
-    // wait next scheduling
-    _windows_event_wait(p_cur_task->_h_thread_event);
+#pragma warning(push)
+#pragma warning(disable: 4312)
+        {
+            svc_call.num = 0x02;
+            svc_call.args[0] = (void*)p_task;
+            svc_call.args[1] = (void*)priority;
+        }
+#pragma warning(pop)
+
+        // request svc call
+        _svcbuff_push(&g_svcbuff, &svc_call);
+
+        // wait next scheduling
+        _windows_event_wait(p_cur_task->_h_thread_event, 0xFFFFFFFF);
+    }
+    else
+    {
+        _svc_task_ready(p_task, priority);
+    }
 
     return RESULT_SUCCESS;
 }
 
 RESULT_t _port_svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
 {
-    P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+    if (g_system_started == TRUE)
+    {
+        P_TASK_t    p_cur_task = g_kernel.task_curr_running;
+        svc_arg_t   svc_call;
 
-    // wait next scheduling
-    _windows_event_wait(p_cur_task->_h_thread_event);
+#pragma warning(push)
+#pragma warning(disable: 4312)
+        {
+            svc_call.num = 0x03;
+            svc_call.args[0] = (void*) p_task;
+            svc_call.args[1] = (void*) wait_obj;
+            svc_call.args[2] = (void*) time_ms;
+        }
+#pragma warning(pop)
+
+        // request svc call
+        _svcbuff_push(&g_svcbuff, &svc_call);
+
+        // wait next scheduling
+        _windows_event_wait(p_cur_task->_h_thread_event, 0xFFFFFFFF);
+    }
+    else
+    {
+        _svc_task_block(p_task, wait_obj, time_ms);
+    }
 
     return RESULT_SUCCESS;
 }

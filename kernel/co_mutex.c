@@ -43,9 +43,9 @@ RESULT_t _svc_mutex_enter(P_MUTEX_t p_mutex, P_TASK_t p_task)
         return RESULT_SUCCESS;
     }
 
-    if (p_task->priority > p_mutex->p_owner_task->priority)
+    if (p_task->priority_cur > p_mutex->p_owner_task->priority_cur)
     {
-        _svc_task_ready(p_mutex->p_owner_task, p_task->priority);
+        _svc_task_ready(p_mutex->p_owner_task, p_task->priority_cur);
     }
 
     _svc_task_block(p_task, p_mutex, 0);

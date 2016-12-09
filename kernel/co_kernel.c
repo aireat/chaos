@@ -45,14 +45,6 @@ VOID _knl_init(VOID)
 }
 
 
-VOID _co_memset(VOID *p_memory, BYTE value, INT size)
-{
-    BYTE    *p_data = (BYTE*) p_memory;
-
-    while (size-- > 0)
-        *p_data++ = value;
-}
-
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus

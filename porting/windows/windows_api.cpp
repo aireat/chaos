@@ -28,6 +28,8 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+extern BOOL g_thread_created;
+
 extern VOID _windows_thread_entry(VOID *p_arg);
 
 DWORD WINAPI ThreadProc(LPVOID lpParameter)
@@ -37,41 +39,103 @@ DWORD WINAPI ThreadProc(LPVOID lpParameter)
     return 0;
 }
 
-VOID* _windows_thread_create(VOID *p_arg)
+void* _windows_thread_create(void *p_arg, const char *p_name)
 {
     HANDLE  h_thread;
+    DWORD   threadID;
+
+    g_thread_created = FALSE;
 
     // create thread as suspend
     h_thread = CreateThread(NULL,                   /* lpThreadAttributes   */
                             0,                      /* dwStackSize          */
                             ThreadProc,             /* lpStartAddress       */
                             (LPVOID)p_arg,          /* lpParameter          */
-                            NULL,                   /* dwCreationFlags      */
-                            NULL);                  /* lpThreadId           */
+                            0,       /* dwCreationFlags      */
+                            &threadID);             /* lpThreadId           */
+
+    // waiting until creating thread
+    {
+        while (g_thread_created == FALSE)
+        {
+            Sleep(100);
+        }
+    }
+
+    // set thread name
+    {
+        const DWORD MS_VC_EXCEPTION=0x406D1388;
+
+#pragma pack(push,8)
+        typedef struct tagTHREADNAME_INFO
+        {
+           DWORD dwType;        // Must be 0x1000.
+           LPCSTR szName;       // Pointer to name (in user addr space).
+           DWORD dwThreadID;    // Thread ID (-1=caller thread).
+           DWORD dwFlags;       // Reserved for future use, must be zero.
+        } THREADNAME_INFO;
+#pragma pack(pop)
+
+        THREADNAME_INFO info;
+        info.dwType = 0x1000;
+        info.szName = p_name;
+        info.dwThreadID = threadID;
+        info.dwFlags = 0;
+
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
+
+        Sleep(10);
+
+        __try
+        {
+           RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+        }
+        __except(EXCEPTION_EXECUTE_HANDLER)
+        {
+        }
+
+        Sleep(10);
+
+#pragma warning(pop)
+    }
+
     return (VOID*) h_thread;
 }
 
-VOID* _windows_event_create(int bManualReset)
+void* _windows_event_create(int bManualReset)
 {
     HANDLE  h_event;
 
     h_event = CreateEvent(NULL, bManualReset, FALSE, NULL);
 
-    return (VOID*) h_event;
+    return (void*) h_event;
 }
 
-VOID _windows_event_set(VOID *handle)
+void _windows_event_set(void *handle)
 {
     SetEvent((HANDLE)handle);
 }
 
-VOID _windows_event_wait(VOID *handle)
+int _windows_event_wait(void *handle, unsigned int m_seconds)
 {
-    while (1)
+    DWORD   result;
+
     {
-        if (WaitForSingleObject((HANDLE)handle, INFINITE) == WAIT_OBJECT_0)
-            break;
+        result = WaitForSingleObject((HANDLE)handle, m_seconds);
+        if (result == WAIT_OBJECT_0)
+            return 1;
+
+        if (result == WAIT_TIMEOUT)
+            return 0;
+
+        return -1;
     }
+}
+
+unsigned long _windows_get_tickcount(void)
+{
+    return (unsigned long) GetTickCount();
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

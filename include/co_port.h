@@ -38,6 +38,8 @@ VOID _port_system_init(VOID);
 
 VOID _port_system_start(VOID);
 
+VOID _port_task_created(P_TASK_t p_task);
+
 VOID _port_stack_set_up(P_TASK_t p_task, P_TASK_PROC_t entry_point, VOID *p_arg);
 
 VOID _port_do_context_switch(VOID);

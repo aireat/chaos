@@ -35,11 +35,11 @@ VOID _task_entry_point(P_TASK_t       p_task,
                        INT            result)
 {
     INT     i = 0;
-	while(1)
-    {
-        i++;
-    }
+
     _K_LOG_TASK("[%s] task created.", p_task->name);
+
+    // report it to port side
+    _port_task_created(p_task);
 
     // call entry point
     result = entry_point(p_arg);
@@ -68,13 +68,17 @@ WEAK VOID _port_user_idle(UINT idle_stay_ms)
 
 RESULT_t _svc_task_create(P_TASK_t p_task)
 {
+    // it have to set value of idle task
     if (g_kernel.task_curr_running == NULL)
+    {
         g_kernel.task_curr_running = p_task;
+        g_kernel.task_next_running = p_task;
+    }
 
     // Add task in creation list
     slist_add_node_at_tail(&(g_kernel.slist_task), &(p_task->snode_create));
 
-    _sch_make_ready(p_task, p_task->priority);
+    _sch_make_ready(p_task, p_task->priority_org);
 
     return RESULT_SUCCESS;
 }
@@ -86,8 +90,6 @@ RESULT_t _svc_task_delete(P_TASK_t p_task)
 
     // Delete task from creation list
     slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
-
-    _knl_do_context_switch();
 
     return RESULT_SUCCESS;
 }
@@ -110,8 +112,6 @@ RESULT_t _svc_task_block(P_TASK_t p_task, VOID *wait_obj, UINT time_ms)
 {
     _sch_make_block(p_task, (P_OBJ_HEAD_t)wait_obj, time_ms);
 
-    _knl_do_context_switch();
-
     return RESULT_SUCCESS;
 }
 
@@ -120,12 +120,11 @@ RESULT_t task_create(P_TASK_t       p_task,
                      P_TASK_PROC_t  entry_point,
                      VOID          *p_arg)
 {
-    if (p_task->priority == 0)
+    if (p_task->priority_org == 0)
         return RESULT_TASK_INVALID_PRIORITY;
 
     // check priority
-    p_task->priority = (INT8)(_CO_MIN((p_task->priority), 
-                                      (_MAXIMUM_PRIORITY)) - 1);
+    p_task->priority_org = (INT8)(_CO_MIN((p_task->priority_org), (_MAXIMUM_PRIORITY)) - 1);
 
     // make specific pattern in stack for traceing
 #if (_ENABLE_STACK_TRACE)
@@ -166,7 +165,7 @@ RESULT_t task_block(P_TASK_t p_task)
     if (!(p_task->flag & TASK_FLAG_READY))
         return RESULT_SUCCESS;
 
-    return svc_task_block(p_task, NULL, TASK_TIME_INFINITE);
+    return svc_task_block(p_task, NULL, 0);
 }
 
 RESULT_t task_ready(P_TASK_t p_task)
@@ -182,14 +181,14 @@ RESULT_t task_ready(P_TASK_t p_task)
     if (p_task->flag & TASK_FLAG_READY)
         return RESULT_SUCCESS;
 
-    return svc_task_ready(p_task, p_task->priority);
+    return svc_task_ready(p_task, p_task->priority_org);
 }
 
 RESULT_t task_yield(VOID)
 {
     P_TASK_t p_task = g_kernel.task_curr_running;
 
-    return svc_task_block(p_task, NULL, 0);
+    return svc_task_block(p_task, NULL, 1);
 }
 
 RESULT_t task_sleep(UINT millisecond)
@@ -210,9 +209,9 @@ RESULT_t task_sleep(UINT millisecond)
                     p_task->name, p_task->flag);
 
         return RESULT_INVALID_STATE;
-    } 
+    }
 
-    return svc_task_block(p_task, NULL, millisecond);
+    return svc_task_block(p_task, NULL, _CO_MAX(1, millisecond));
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

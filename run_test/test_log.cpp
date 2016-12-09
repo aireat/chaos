@@ -20,96 +20,92 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "svc_ringbuff.h"
+#include "chaos.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "stdarg.h"
+#include "string.h"
 
 #ifdef __cplusplus
-extern "C" {
+    extern "C" {
 #endif
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#ifndef VOID
-    #define VOID                void
-#endif
+#define SIZE_DLOG_BUFFER        96
+#define LOG_MAX_CLASS_LENGTH    8
 
-// type for false
-#ifndef FALSE
-#define FALSE                   0
-#endif
 
-// type for true
-#ifndef TRUE
-#define TRUE                    !FALSE
-#endif
-
-extern VOID* _windows_event_create(int bManualReset);
-extern int   _windows_event_wait(VOID *handle, unsigned int m_seconds);
-extern VOID  _windows_event_set(VOID *handle);
-
-void _svcbuff_init(svc_buff_t *p_cb, int size)
+VOID _port_log_printf(CONST CHAR *p_class, CONST CHAR *p_format, ...)
 {
-    p_cb->head = 0;
-    p_cb->tail = 0;
-    p_cb->size = size;
-
-    // create auto-reset event
-    p_cb->event = _windows_event_create(FALSE);
-}
-
-
-int  _svcbuff_push(svc_buff_t *p_cb, svc_arg_t *p_data)
-{
-    int     next;
-
-    // Get next index to store a data
-    next = p_cb->head + 1;
-    if (next >= p_cb->size)
-        next = 0;
-
-    // Check the index is available.
-    // (head + 1) is equal to tail ==> the buffer is full
-    if (next == p_cb->tail)
-        return 0;
-
-    // Store the data and update head value
-    p_cb->data[p_cb->head] = *p_data;
-    p_cb->head = next;
-
-    _windows_event_set(p_cb->event);
-
-    return 1;
-}
-
-int  _svcbuff_wait(svc_buff_t *p_cb, int m_seconds)
-{
-    return _windows_event_wait(p_cb->event, m_seconds);
-}
-
-int  _svcbuff_pop(svc_buff_t *p_cb, svc_arg_t *p_data)
-{
-    int     next;
+    va_list     args;
+    INT         size, count;
+    CHAR        _log_buffer[SIZE_DLOG_BUFFER];
     
-    // Check a data is available
-    // Head is equal to head ==> the buffer is empty
-    if (p_cb->head == p_cb->tail)
-        return 0;
+    {
+        size = 0;
 
-    *p_data = p_cb->data[p_cb->tail];
+        {
+            //size += sprintf(&_log_buffer[size], " %08X ", co_get_tick_count());
+            size += sprintf(&_log_buffer[size], " %08X ", 0); 
+        }
 
-    // Move next index
-    next = p_cb->tail + 1;
-    if (next >= p_cb->size)
-        next = 0;
+        {
+            CHAR        *pdest;
+            CONST CHAR  *psrc;
+            int         i;
 
-    p_cb->tail = next;
+            psrc  = p_class;
+            pdest = &_log_buffer[size];
 
-    return 1;
+            for (i = 0; i < LOG_MAX_CLASS_LENGTH; i++)
+            {
+                if (*psrc)
+                    *pdest++ = *psrc++;
+                else
+                    *pdest++ = ' ';
+            }
+
+            size += LOG_MAX_CLASS_LENGTH;
+            _log_buffer[size++] = ' ';
+        }
+
+        // add message
+        {
+            va_start(args, p_format);
+
+            count = vsnprintf(&_log_buffer[size], (SIZE_DLOG_BUFFER-2-size), p_format, args);
+
+            if ((count > 0) && (count < (SIZE_DLOG_BUFFER-size-2)))
+            {
+                size += count;
+                _log_buffer[size++] = 0x0A;
+                _log_buffer[size++] = 0x0D;
+                //            size++;
+            }
+            else
+            {
+                size = SIZE_DLOG_BUFFER;
+                _log_buffer[SIZE_DLOG_BUFFER-2] = 0x0A;
+                _log_buffer[SIZE_DLOG_BUFFER-1] = 0x0D;
+            }
+
+            va_end(args);
+        }
+
+        _log_buffer[size] = 0x00;
+    }
+
+    {
+        printf("%s", _log_buffer);
+    }
+
 }
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
-} /* extern "C" */
+    } /* extern "C" */
 #endif
 

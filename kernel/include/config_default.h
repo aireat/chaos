@@ -23,7 +23,6 @@
 #ifndef __CONFIG_DEFAULT_H__
 #define __CONFIG_DEFAULT_H__
 
-#include "type.h"
 #include "config_user.h"
 
 #ifdef __cplusplus

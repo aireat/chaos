@@ -24,7 +24,6 @@
 #define __SVC_RINGBUFF_H__
 
 
-
 #ifdef __cplusplus
     extern "C" {
 #endif
@@ -36,7 +35,7 @@
 typedef struct
 {
     unsigned int    num;
-    unsigned int    args[4];
+    void*           args[4];
 
 } svc_arg_t;
 
@@ -45,12 +44,14 @@ typedef struct
     int             head;           /*!< @brief head it move up when data is added.     */
     int             tail;           /*!< @brief tail it move up when data is removed.   */
     int             size;           /*!< @brief size it is size of a ring buffer.       */
+    void           *event;
 
     svc_arg_t       data[SVC_ARG_COUNT];
 
 } svc_buff_t;
 
 void _svcbuff_init(svc_buff_t *p_cb, int size);
+int  _svcbuff_wait(svc_buff_t *p_cb, int m_seconds);
 int  _svcbuff_push(svc_buff_t *p_cb, svc_arg_t *p_data);
 int  _svcbuff_pop(svc_buff_t *p_cb, svc_arg_t *p_data);
 

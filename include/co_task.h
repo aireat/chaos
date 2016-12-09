@@ -29,7 +29,6 @@
 #include "co_linked_list.h"
 #include "co_result.h"
 
-#include "config_user.h"
 #include "config_default.h"
 
 #ifdef __cplusplus
@@ -45,7 +44,7 @@
 /*======================================================================================*/
 #if (_ENABLE_STACK_TRACE)
     #define DEF_TASK(name, priority, stack_size)                                        \
-            UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
+            UINT8   name##_stack[_CO_STACK(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
                 (INT*) name##_stack,        /* stack_addr               */              \
@@ -53,16 +52,17 @@
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
                 0,                          /* flag                     */              \
-                priority,                   /* priority                 */              \
-                _CO_ALIGN(stack_size, 8),   /* scratch                  */              \
-                _CO_ALIGN(stack_size, 8),   /* stack_size_total         */              \
+                priority,                   /* priority_org             */              \
+                priority,                   /* priority_cur             */              \
+                _CO_STACK(stack_size, 8),   /* scratch                  */              \
+                _CO_STACK(stack_size, 8),   /* stack_size_total         */              \
                 0,                          /* stack_size_usage         */              \
                 (INT*) name##_stack,        /* stack_size_trace         */              \
             }
 
 #else
     #define DEF_TASK(name, priority, stack_size)                                        \
-            UINT8   name##_stack[_CO_ALIGN(stack_size, 8)];                             \
+            UINT8   name##_stack[_CO_STACK(stack_size, 8)];                             \
             TASK_t  name =                                                              \
             {                                                                           \
                 (INT*) name##_stack,        /* stack_addr               */              \
@@ -70,8 +70,9 @@
                 { NULL },                   /* snode_create             */              \
                 { NULL, NULL, NULL },       /* dnode_task               */              \
                 0,                          /* flag                     */              \
-                priority,                   /* priority                 */              \
-                _CO_ALIGN(stack_size, 8),   /* scratch                  */              \
+                priority,                   /* priority_org             */              \
+                priority,                   /* priority_cur             */              \
+                _CO_STACK(stack_size, 8),   /* scratch                  */              \
             }
 
 #endif
@@ -86,7 +87,6 @@
 #define TASK_FLAG_NONE                  0
 #define TASK_FLAG_READY                 (1 <<  0)
 #define TASK_FLAG_READY1                (1 <<  1)
-#define TASK_FLAG_CHANGED_PRIORITY      (1 <<  2)
 #define TASK_FLAG_ERROR                 (1 <<  3)
 
 #define TASK_FALG_WAIT_OBJECT           (1 <<  4)
@@ -110,7 +110,8 @@ typedef struct _TASK_
     DNODE_t         dnode_task;
 
     INT16           flag;
-    UINT16          priority;
+    UINT8           priority_org;
+    UINT8           priority_cur;
     UINT            scratch;                /* [ scratch usage ]                        */
                                             /*   state  |   mean                        */
                                             /* ---------|------------------------------ */

@@ -34,13 +34,9 @@ INT _knl_stack_usage(P_TASK_t p_task);
 
 VOID _knl_do_context_switch(VOID)
 {
-    _knl_check_changes();
-
     g_kernel.task_next_running = _sch_get_next_task();
     if (g_kernel.task_next_running != g_kernel.task_curr_running)
     {
-        //g_kernel.task_next_running = g_kernel.task_curr_running;
-
         _port_do_context_switch();
     }
 }
@@ -120,10 +116,6 @@ VOID _knl_check_changes(VOID)
         }
 #endif
 
-        // If task is ready, go next item
-        if (p_task->flag & TASK_FLAG_READY)
-            continue;
-
         // check wait object's changes
         if (p_task->flag & TASK_FALG_WAIT_OBJECT)
         {
@@ -135,26 +127,27 @@ VOID _knl_check_changes(VOID)
             }
         }
 
-        // if system tick is not chagne, go next item
-        if (g_kernel.system_tick == g_kernel.system_tick_check)
-            continue;
-
         // check timeout
-        if (p_task->flag & TASK_FLAG_TIMEOUT)
+        // if system tick is not chagne, go next item
+        if ((p_task->flag & TASK_FLAG_TIMEOUT) &&
+            (g_kernel.system_tick != g_kernel.system_tick_check))
         {
             if (p_task->scratch <= _SYSTEM_TICK_TIME)
             {
-                _sch_make_ready(p_task, p_task->priority);
+                _sch_make_ready(p_task, p_task->priority_org);
 
-                // TODO: need to define timeout-value
-                p_task->scratch = 0;
-
+                p_task->scratch = RESULT_TIMEOUT;
                 continue;
             }
-
-            p_task->scratch -= _SYSTEM_TICK_TIME;
+            else
+            {
+                p_task->scratch -= _SYSTEM_TICK_TIME;
+            }
         }
     }
+
+    // update checked system tick count
+    g_kernel.system_tick_check = g_kernel.system_tick;
 }
 
 

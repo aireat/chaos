@@ -20,96 +20,84 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "svc_ringbuff.h"
+#include "chaos.h"
 
 #ifdef __cplusplus
-extern "C" {
+    extern "C" {
 #endif
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-#ifndef VOID
-    #define VOID                void
+DEF_TASK(task_main, 1, 64);
+DEF_TASK(task_test, 1, 64);
+
+INT task_main_proc(VOID *p_arg);
+INT task_test_proc(VOID *p_arg);
+
+#if   defined (WIN32)
+    int win_main(void)
+#else
+    int main(void)
 #endif
+{
+    chaos_start(&task_main,
+                task_main_proc,
+                NULL);
 
-// type for false
-#ifndef FALSE
-#define FALSE                   0
+    return 0;
+}
+
+#define TEST_API_BLOCK          0
+#define TEST_API_YIELD          0
+#define TEST_API_SLEEP          1
+
+INT task_main_proc(VOID *p_arg)
+{
+    task_create(&task_test, task_test_proc, NULL);
+
+    while (1)
+    {
+#if     (TEST_API_BLOCK)
+        {
+            task_ready(&task_test);
+            task_block(&task_main);
+        }
+#elif   (TEST_API_YIELD)
+        {
+            task_yield();
+        }
+#elif   (TEST_API_SLEEP)
+        {
+            task_sleep(500);
+        }
 #endif
+    }
+}
 
-// type for true
-#ifndef TRUE
-#define TRUE                    !FALSE
+INT task_test_proc(VOID *p_arg)
+{
+    while(1)
+    {
+#if     (TEST_API_BLOCK)
+        {
+            task_ready(&task_main);
+            task_block(&task_test);
+        }
+#elif   (TEST_API_YIELD)
+        {
+            task_yield();
+        }
+#elif   (TEST_API_SLEEP)
+        {
+            task_sleep(600);
+        }
 #endif
-
-extern VOID* _windows_event_create(int bManualReset);
-extern int   _windows_event_wait(VOID *handle, unsigned int m_seconds);
-extern VOID  _windows_event_set(VOID *handle);
-
-void _svcbuff_init(svc_buff_t *p_cb, int size)
-{
-    p_cb->head = 0;
-    p_cb->tail = 0;
-    p_cb->size = size;
-
-    // create auto-reset event
-    p_cb->event = _windows_event_create(FALSE);
+    }
 }
-
-
-int  _svcbuff_push(svc_buff_t *p_cb, svc_arg_t *p_data)
-{
-    int     next;
-
-    // Get next index to store a data
-    next = p_cb->head + 1;
-    if (next >= p_cb->size)
-        next = 0;
-
-    // Check the index is available.
-    // (head + 1) is equal to tail ==> the buffer is full
-    if (next == p_cb->tail)
-        return 0;
-
-    // Store the data and update head value
-    p_cb->data[p_cb->head] = *p_data;
-    p_cb->head = next;
-
-    _windows_event_set(p_cb->event);
-
-    return 1;
-}
-
-int  _svcbuff_wait(svc_buff_t *p_cb, int m_seconds)
-{
-    return _windows_event_wait(p_cb->event, m_seconds);
-}
-
-int  _svcbuff_pop(svc_buff_t *p_cb, svc_arg_t *p_data)
-{
-    int     next;
-    
-    // Check a data is available
-    // Head is equal to head ==> the buffer is empty
-    if (p_cb->head == p_cb->tail)
-        return 0;
-
-    *p_data = p_cb->data[p_cb->tail];
-
-    // Move next index
-    next = p_cb->tail + 1;
-    if (next >= p_cb->size)
-        next = 0;
-
-    p_cb->tail = next;
-
-    return 1;
-}
-
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 
 #ifdef __cplusplus
-} /* extern "C" */
+    } /* extern "C" */
 #endif
 

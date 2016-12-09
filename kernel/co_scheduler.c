@@ -106,7 +106,7 @@ P_TASK_t _sch_get_next_task(VOID)
 }
 
 //
-// 현제 ready 정보에 task를 설정한다.
+// 
 //
 VOID _sch_make_ready(P_TASK_t p_task, INT priority)
 {
@@ -137,9 +137,9 @@ VOID _sch_make_ready(P_TASK_t p_task, INT priority)
             p_task->flag = (TASK_FLAG_READY);
         }
 #endif
-        if (priority != p_task->priority)
-            p_task->flag |= TASK_FLAG_CHANGED_PRIORITY;
     }
+
+    p_task->priority_cur = priority;
 }
 
 
@@ -153,7 +153,6 @@ VOID _sch_make_block(P_TASK_t p_task, P_OBJ_HEAD_t p_obj_head, UINT time_ms)
     {
         dlist_add_node_at_tail(&(p_obj_head->dlist_wait_tasks),
                                &(p_task->dnode_task));
-
         p_task->flag |= TASK_FALG_WAIT_OBJECT;
     }
 
@@ -161,9 +160,10 @@ VOID _sch_make_block(P_TASK_t p_task, P_OBJ_HEAD_t p_obj_head, UINT time_ms)
     if (time_ms > 0)
     {
         p_task->scratch = time_ms;
-
         p_task->flag |= TASK_FLAG_TIMEOUT;
     }
+
+    p_task->priority_cur = p_task->priority_org;
 }
 
 
@@ -178,15 +178,11 @@ VOID _sch_make_free(P_TASK_t p_task)
         if (p_task->flag & TASK_FLAG_READY)
         {
             P_READY_t   p_ready  = g_kernel.sch.ready;
-            INT         priority = p_task->priority;
 
             if (p_task->flag & TASK_FLAG_READY1)
                 p_ready++;
 
-            if (p_task->flag & TASK_FLAG_CHANGED_PRIORITY)
-                priority = 0;
-
-            READY_FLAG_CLEAR(p_ready, priority);
+            READY_FLAG_CLEAR(p_ready, p_task->priority_cur);
         }
     }
 

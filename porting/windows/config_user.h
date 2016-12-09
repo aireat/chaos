@@ -23,9 +23,6 @@
 #ifndef __CONFIG_USER_H__
 #define __CONFIG_USER_H__
 
-#include "type.h"
-//#include "WinBase.h"
-//#include "windows.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -33,6 +30,13 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
+#define _SYSTEM_TICK_TIME               50
+
+#define _IMPLEMENT_CLZ_BY_SW            1
+
+#define _ENABLE_USE_SVC_CALL            0
+
+#define _ENABLE_STACK_TRACE             0
 
 /*======================================================================================*/
 /*
@@ -41,10 +45,10 @@
 /*======================================================================================*/
 
 
-#define _PORT_TASK_EXTENSION_       VOID               *_h_thread;                      \
-                                    VOID               *_h_thread_event;                \
-                                    VOID               *_p_entry_point;                 \
-                                    VOID               *_p_arg;                         \
+#define _PORT_TASK_EXTENSION_       void               *_h_thread;                      \
+                                    void               *_h_thread_event;                \
+                                    void               *_p_entry_point;                 \
+                                    void               *_p_arg;                         \
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
 

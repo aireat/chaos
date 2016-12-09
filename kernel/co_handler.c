@@ -28,7 +28,7 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-typedef INT (*P_SVC_FUNC)(UINT arg0, UINT arg1, UINT arg2, UINT arg3);
+typedef INT (*P_SVC_FUNC)(VOID *arg0, VOID *arg1, VOID *arg2, VOID *arg3);
 
 
 CONST P_SVC_FUNC  g_svc_func_table[] =
@@ -39,7 +39,7 @@ CONST P_SVC_FUNC  g_svc_func_table[] =
     (P_SVC_FUNC) _svc_task_block,
 };
 
-INT _handler_svc(UINT svc_num, UINT *svc_args)
+INT _handler_svc(UINT svc_num, VOID *svc_args[4])
 {
     // - Stacked R0   = svc_args[0]
     // - Stacked R1   = svc_args[1]
@@ -52,21 +52,39 @@ INT _handler_svc(UINT svc_num, UINT *svc_args)
 
     if (svc_num < _CO_ARRAY_COUNT(g_svc_func_table))
     {
-        return g_svc_func_table[svc_num](svc_args[0],
-                                         svc_args[1],
-                                         svc_args[2],
-                                         svc_args[3]);
+        INT     result;
+
+        result = g_svc_func_table[svc_num](svc_args[0],
+                                           svc_args[1],
+                                           svc_args[2],
+                                           svc_args[3]);
+
+        if (!(g_kernel.task_curr_running->flag & TASK_FLAG_READY))
+        {
+            _knl_check_changes();
+            _knl_do_context_switch();
+        }
+
+        return result;
     }
 
     return -1;
 }
 
+
+
 VOID _handler_systick(VOID)
 {
+    // update system tick count
     g_kernel.system_tick += _SYSTEM_TICK_TIME;
 
-    //if (g_kernel.task_curr_running == g_kernel.task_idle)
+    _knl_check_changes();
+
+    // yield schedule
+    if (g_kernel.task_curr_running == g_kernel.task_idle)
+    {
         _knl_do_context_switch();
+    }
 }
 
 

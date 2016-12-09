@@ -20,7 +20,6 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "config_user.h"
 #include "config_default.h"
 
 #ifdef __cplusplus

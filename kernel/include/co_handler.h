@@ -33,7 +33,7 @@
 
 
 VOID _handler_systick(VOID);
-INT  _handler_svc(UINT svc_num, UINT *svc_args);
+INT  _handler_svc(UINT svc_num, VOID *svc_args[4]);
 
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////

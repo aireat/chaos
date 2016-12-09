@@ -33,14 +33,16 @@
 
 typedef enum
 {
-    RESULT_SUCCESS          =  0,
+    RESULT_SUCCESS                      =   0,
 
-    RESULT_TASK_ERROR               = -10,
-    RESULT_TASK_INVALID_PRIORITY    = -11,
+    RESULT_INTERNAL_ERROR               =  -1,
+    RESULT_TASK_FLAG_ERROR              =  -2,
+    RESULT_INVALID_STATE                =  -3,
 
-    RESULT_INTERNAL_ERROR   =  -1,
-    RESULT_TASK_FLAG_ERROR  =  -2,
-    RESULT_INVALID_STATE    =  -2,
+    RESULT_TIMEOUT                      = -10,
+
+    RESULT_TASK_ERROR                   = -20,
+    RESULT_TASK_INVALID_PRIORITY        = -21,
 
     RESULT_MAX
 

@@ -28,11 +28,27 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-DEF_TASK(idle, 1, _TASK_IDLE_STACK_SIZE);
+DEF_TASK(task_idle, 1, _TASK_IDLE_STACK_SIZE);
+
+
+VOID _system_make_internal(P_TASK_t       p_task,
+                           P_TASK_PROC_t  entry_point,
+                           VOID          *p_arg)
+{
+    task_create(p_task, entry_point, p_arg);
+    task_block(p_task);
+
+#if (!_ENABLE_STACK_TRACE)
+    {
+        // Delete task from creation list
+        slist_cut_node(&(g_kernel.slist_task), &(p_task->snode_create));
+    }
+#endif
+}
 
 VOID chaos_start(P_TASK_t       p_task,
-                P_TASK_PROC_t  entry_point,
-                VOID          *p_arg)
+                 P_TASK_PROC_t  entry_point,
+                 VOID          *p_arg)
 {
     // initialize kernel
     _knl_init();
@@ -43,7 +59,10 @@ VOID chaos_start(P_TASK_t       p_task,
     // create basic task
     {
         // create idle task
-        task_create(&idle, _task_idle, NULL);
+        {
+            _system_make_internal(&task_idle, _task_idle, NULL);
+            g_kernel.task_idle = &task_idle;
+        }
 
         // create main task
         task_create(p_task, entry_point, p_arg);

@@ -49,7 +49,7 @@ typedef struct _KERNEL_
     P_TASK_t        task_curr_running;
     P_TASK_t        task_next_running;
     P_TASK_t        task_idle;
-    
+
     UINT            system_tick;
     UINT            system_tick_check;
 #if (_ENABLE_STACK_TRACE)

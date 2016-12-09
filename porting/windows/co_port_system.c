@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "co_port.h"
+#include "co_kernel.h"
 
 #ifdef __cplusplus
     extern "C" {
@@ -28,7 +28,12 @@
 
 //////////////////////////////////////  < BEGIN >  ///////////////////////////////////////
 
-extern BOOL    g_system_started;
+extern BOOL        g_system_started;
+extern BOOL        g_thread_created;
+
+extern void  _windows_system_main(void);
+extern void  _windows_event_set(void *handle);
+extern int   _windows_event_wait(void *handle, unsigned int m_seconds);
 
 VOID _port_system_init(VOID)
 {
@@ -38,6 +43,40 @@ VOID _port_system_init(VOID)
 VOID _port_system_start(VOID)
 {
     g_system_started = TRUE;
+
+    _windows_system_main();
+}
+
+VOID _windows_thread_entry(VOID *p_arg)
+{
+    P_TASK_t        p_task = (P_TASK_t) p_arg;
+    P_TASK_PROC_t   entry_point = (P_TASK_PROC_t) p_task->_p_entry_point;
+
+    // start thread
+    _task_entry_point(p_task, entry_point, p_task->_p_arg, 0x00);
+}
+
+VOID _port_task_created(P_TASK_t p_task)
+{
+    g_thread_created = TRUE;
+
+    // wait signal to start thread
+    _windows_event_wait(p_task->_h_thread_event, 0xFFFFFFFF);
+}
+
+VOID _port_do_context_switch(VOID)
+{
+    // nothing to do
+}
+
+void _windows_do_context_switch(void)
+{
+    if (g_kernel.task_curr_running != g_kernel.task_next_running)
+    {
+        _windows_event_set(g_kernel.task_next_running->_h_thread_event);
+
+        g_kernel.task_curr_running = g_kernel.task_next_running;
+    }
 }
 
 //////////////////////////////////////  <  END  >  ///////////////////////////////////////
