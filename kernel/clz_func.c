@@ -20,7 +20,7 @@
 *                                                                                      *
 ========================================================================================*/
 
-#include "clz_func.h"
+#include "co_kernel.h"
 
 
 #ifdef __cplusplus
@@ -46,7 +46,7 @@
 ------------------------------------------------------------------------------------------
 */
 
-static CONST INT8  g_byte_clz_table[256] =
+static CONST INT8  g_clz_table[256] =
 {
     8, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
     3, 3, 3, 3,	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -68,50 +68,16 @@ static CONST INT8  g_byte_clz_table[256] =
 
 INT  clz_func(INT32 value)
 {
-    INT     byte_value, i, add;
-
-#if 1
-    for (i = 24, add = 0; i >= 0; i -= 8, add += 8)
+    if (value & 0xFFFF0000)
     {
-        byte_value = ((value >> i) & 0x000000FF);
-        if (byte_value)
-            return (g_byte_clz_table[byte_value] + add);
+        if (value & 0xFF000000) return g_clz_table[(value >> 24) & 0xFF];
+        else                    return g_clz_table[(value >> 16) & 0xFF] +  8;
     }
-
-    return 32;
-
-#else
-    //
-    // check 0xFF000000
-    //
-    byte_value = ((value >> 24) & 0xFF);
-    if (byte_value)
-        return (g_byte_clz_table[byte_value]);
-
-    //
-    // check 0x00FF0000
-    //
-    byte_value = ((value >> 16) & 0xFF);
-    if (byte_value)
-        return (g_byte_clz_table[byte_value] + 8);
-
-    //
-    // check 0x0000FF00
-    //
-    byte_value = ((value >>  8) & 0xFF);
-    if (byte_value)
-        return (g_byte_clz_table[byte_value] + 16);
-
-    //
-    // check 0x000000FF
-    //
-    byte_value = ((value      ) & 0xFF);
-    if (byte_value)
-        return (g_byte_clz_table[byte_value] + 24);
-
-    return 32;
-
-#endif
+    else
+    {
+        if (value & 0x0000FF00) return g_clz_table[(value >>  8) & 0xFF] + 16;
+        else                    return g_clz_table[(value      ) & 0xFF] + 24;
+    }
 }
 
 #endif //_IMPLEMENT_CLZ_BY_SW
